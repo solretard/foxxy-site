@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FOXXY — Whitelist opens soon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1C2528;--ink-2:#222D31;--paper:#EDEEE8;--fur:#E4E0D2;--steel:#8D9AA0;--steel-dim:#5D6C72;--cord:#9A3F35;--line:#33434A;--display:"Shippori Mincho B1",Georgia,serif;--body:"Zen Kaku Gothic New","Helvetica Neue",Arial,sans-serif;}
+*{box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{margin:0;background:var(--ink);color:var(--fur);font-family:var(--body);font-size:17px;line-height:1.75;-webkit-font-smoothing:antialiased;}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(rgba(237,238,232,.09) 1px,transparent 1px);background-size:4px 4px;opacity:.5;}
+.wrap{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:0 28px;}
+a{color:inherit;text-decoration:none;}
+:focus-visible{outline:2px solid var(--paper);outline-offset:3px;}
+nav{border-bottom:1px solid var(--line);}
+nav .wrap{max-width:1120px;display:flex;align-items:center;justify-content:space-between;height:68px;}
+nav img{height:26px;}
+.navlinks{display:flex;gap:26px;font-size:14px;letter-spacing:.06em;color:var(--steel);}
+.navlinks a:hover{color:var(--paper);}
+@media(max-width:560px){.navlinks{display:none;}}
+
+/* ── HERO / GRAPHIC ─────────────────────────────── */
+.hero{padding:72px 0 56px;text-align:center;border-bottom:1px solid var(--line);}
+.badge-soon{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.14em;color:var(--cord);border:1px solid var(--cord);padding:6px 16px;margin-bottom:28px;}
+.badge-soon .dot{width:6px;height:6px;border-radius:50%;background:var(--cord);animation:pulse 1.4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(1.4);}}
+
+.scanwrap{position:relative;width:180px;height:180px;margin:0 auto 30px;}
+.scanwrap svg{width:100%;height:100%;display:block;}
+.ring{fill:none;stroke:var(--cord);stroke-width:1;opacity:.55;transform-origin:center;}
+.ring.r1{animation:ringpulse 2.6s ease-out infinite;}
+.ring.r2{animation:ringpulse 2.6s ease-out .9s infinite;}
+.ring.r3{animation:ringpulse 2.6s ease-out 1.8s infinite;}
+@keyframes ringpulse{0%{opacity:.7;transform:scale(.7);}100%{opacity:0;transform:scale(1.5);}}
+.scanwrap img{position:absolute;inset:0;margin:auto;width:104px;height:104px;object-fit:cover;border-radius:50%;border:2px solid var(--cord);box-shadow:0 0 26px rgba(154,63,53,.55);}
+
+h1{font-family:var(--display);font-weight:800;font-size:40px;line-height:1.2;color:var(--paper);margin:0 0 14px;}
+.lede{font-size:17px;color:var(--steel);max-width:52ch;margin:0 auto 40px;}
+
+.countdown{display:flex;gap:14px;justify-content:center;margin:0 auto 10px;flex-wrap:wrap;}
+.cbox{background:var(--ink-2);border:1px solid var(--cord);min-width:82px;padding:16px 10px;text-align:center;}
+.cbox .num{font-family:var(--display);font-size:34px;font-weight:800;color:var(--paper);line-height:1;display:block;}
+.cbox .lbl{font-size:11px;letter-spacing:.12em;color:var(--steel);margin-top:6px;display:block;}
+.countnote{font-size:13px;color:var(--steel-dim);margin:14px 0 0;}
+.countnote.ended{color:var(--cord);}
+
+/* ── BENEFITS ───────────────────────────────────── */
+section.panel{padding:56px 0;border-bottom:1px solid var(--line);}
+h2{font-family:var(--display);font-weight:800;font-size:26px;color:var(--paper);margin:0 0 22px;text-align:center;}
+.benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.benefit{background:var(--ink-2);border:1px solid var(--line);padding:22px 18px;}
+.benefit .n{font-family:var(--display);font-size:12px;color:var(--cord);letter-spacing:.16em;margin-bottom:10px;}
+.benefit h3{font-family:var(--display);font-size:16px;color:var(--paper);margin:0 0 6px;font-weight:600;}
+.benefit p{font-size:14px;color:var(--steel);margin:0;line-height:1.6;}
+@media(max-width:700px){.benefits{grid-template-columns:1fr;}}
+
+/* ── TASKS / CONNECT ────────────────────────────── */
+.taskcard{max-width:480px;margin:0 auto;}
+.step{display:flex;gap:14px;align-items:flex-start;padding:18px 0;border-bottom:1px solid var(--line);}
+.step:last-of-type{border-bottom:none;}
+.stepnum{width:26px;height:26px;border:1px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--steel);flex-shrink:0;}
+.stepnum.done{background:var(--cord);border-color:var(--cord);color:#fff;}
+.stepbody{flex:1;}
+.stepbody h3{font-size:15px;color:var(--paper);margin:0 0 4px;font-weight:600;}
+.stepbody p{font-size:13.5px;color:var(--steel);margin:0 0 10px;line-height:1.55;}
+.stepbody .sub{font-size:12.5px;color:var(--steel-dim);}
+
+.xbtn{display:inline-flex;align-items:center;gap:9px;background:var(--paper);color:var(--ink);border:none;padding:12px 22px;font-size:14.5px;font-weight:500;cursor:pointer;}
+.xbtn:hover{background:#fff;}
+.xbtn svg{width:15px;height:15px;}
+.connected-pill{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--paper);background:var(--ink-2);border:1px solid var(--line);padding:9px 16px;}
+.connected-pill .ok{color:#6FA37A;}
+
+.checkrow{display:flex;align-items:flex-start;gap:10px;margin:0 0 14px;}
+.checkrow input[type=checkbox]{width:18px;height:18px;margin-top:1px;accent-color:var(--cord);flex-shrink:0;}
+.checkrow label{font-size:14.5px;color:var(--fur);cursor:pointer;}
+.checkrow a{color:var(--cord);text-decoration:underline;text-underline-offset:2px;}
+
+input[type=text]{width:100%;background:var(--ink-2);border:1px solid var(--line);color:var(--paper);padding:14px 16px;font-family:var(--body);font-size:15px;transition:border-color .18s;}
+input[type=text]::placeholder{color:var(--steel-dim);}
+input[type=text]:focus{outline:none;border-color:var(--cord);}
+label.fl{font-size:13px;letter-spacing:.06em;color:var(--steel);display:block;margin-bottom:6px;}
+
+.btn{display:inline-block;padding:14px 26px;font-size:15px;font-weight:500;border:1px solid var(--paper);color:var(--paper);background:none;transition:background .18s,color .18s;cursor:pointer;width:100%;text-align:center;}
+.btn:hover{background:var(--paper);color:var(--ink);}
+.btn.solid{background:var(--cord);border-color:var(--cord);color:#fff;}
+.btn.solid:hover{background:#B04B40;border-color:#B04B40;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.btn:disabled:hover{background:var(--cord);color:#fff;}
+
+.err{font-size:14px;color:#D97A6E;margin:14px 0 0;display:none;}
+.err.show{display:block;}
+.note{font-size:12.5px;color:var(--steel-dim);margin-top:18px;text-align:center;}
+
+.done{display:none;text-align:center;}
+.done.show{display:block;}
+.badge{display:inline-block;font-size:12px;letter-spacing:.1em;color:var(--cord);border:1px solid var(--cord);padding:5px 14px;margin-bottom:20px;}
+
+footer{padding:34px 0 46px;border-top:1px solid var(--line);}
+footer .wrap{max-width:1120px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;}
+footer img{height:22px;opacity:.85;}
+.flinks{display:flex;gap:22px;font-size:14px;color:var(--steel);}
+.flinks a:hover{color:var(--paper);}
+.copy{font-size:13px;color:var(--steel-dim);width:100%;}
+
+@media(max-width:560px){h1{font-size:29px;}.cbox{min-width:68px;padding:12px 6px;}.cbox .num{font-size:26px;}}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a href="index.html"><img src="assets/wordmark.png" alt="FOXXY"></a>
+  <div class="navlinks">
+    <a href="index.html">Home</a>
+    <a href="world.html#utility">Utility</a>
+  </div>
+</div></nav>
+
+<div id="page">
+
+  <!-- HERO -->
+  <div class="hero"><div class="wrap">
+    <span class="badge-soon"><span class="dot"></span> WHITELIST COMING SOON</span>
+    <div class="scanwrap">
+      <svg viewBox="0 0 180 180">
+        <circle class="ring r1" cx="90" cy="90" r="60"></circle>
+        <circle class="ring r2" cx="90" cy="90" r="60"></circle>
+        <circle class="ring r3" cx="90" cy="90" r="60"></circle>
+      </svg>
+      <img src="assets/fox.png" alt="FOXXY">
+    </div>
+    <h1>Early wallets get remembered.</h1>
+    <p class="lede">The whitelist mechanic isn't live yet — but the wallets that show up now, before it exists, are the ones we're going to reward most when it does.</p>
+
+    <div class="countdown" id="countdown">
+      <div class="cbox"><span class="num" id="cd-d">--</span><span class="lbl">DAYS</span></div>
+      <div class="cbox"><span class="num" id="cd-h">--</span><span class="lbl">HOURS</span></div>
+      <div class="cbox"><span class="num" id="cd-m">--</span><span class="lbl">MIN</span></div>
+      <div class="cbox"><span class="num" id="cd-s">--</span><span class="lbl">SEC</span></div>
+    </div>
+    <p class="countnote" id="countnote">until this window closes</p>
+  </div></div>
+
+  <!-- BENEFITS -->
+  <section class="panel"><div class="wrap">
+    <h2>Why join before it's live</h2>
+    <div class="benefits">
+      <div class="benefit">
+        <div class="n">01</div>
+        <h3>Pre-points, locked in early</h3>
+        <p>Complete the tasks below now and you start the real scoring system already ahead, before a single wallet is checked.</p>
+      </div>
+      <div class="benefit">
+        <div class="n">02</div>
+        <h3>First shot at guaranteed spots</h3>
+        <p>When the full point system goes live, early members are ranked first — the longer you wait, the more ground there is to make up.</p>
+      </div>
+      <div class="benefit">
+        <div class="n">03</div>
+        <h3>A closing window</h3>
+        <p>This isn't ongoing. When the countdown ends, this early round is done — what you lock in now is what you keep.</p>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- TASKS -->
+  <section class="panel"><div class="wrap">
+    <h2 id="taskHeading">Secure your spot</h2>
+    <div class="taskcard">
+      <div class="step">
+        <div class="stepnum" id="s1num">1</div>
+        <div class="stepbody">
+          <h3>Connect your X account</h3>
+          <p>We use this to confirm you're a real account, not a bot.</p>
+          <div id="xConnectArea">
+            <button class="xbtn" id="connectXBtn" type="button">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              Connect X
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="stepnum" id="s2num">2</div>
+        <div class="stepbody">
+          <h3>Complete the tasks</h3>
+          <div class="checkrow">
+            <input type="checkbox" id="chkFollow" disabled>
+            <label for="chkFollow">I followed <a id="xHandleLink" href="https://x.com/Foxxy_ethn" target="_blank" rel="noopener">@Foxxy_ethn</a> on X</label>
+          </div>
+          <div class="checkrow">
+            <input type="checkbox" id="chkNotif" disabled>
+            <label for="chkNotif">I turned on post notifications (tap the bell on the profile)</label>
+          </div>
+          <p class="sub">These are self-reported for now. Spots are subject to verification before final points are awarded.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="stepnum" id="s3num">3</div>
+        <div class="stepbody">
+          <h3>Submit your wallet</h3>
+          <p>Your EVM address — this is where pre-points and eventual whitelist status attach.</p>
+          <label class="fl" for="wallet">Wallet address</label>
+          <input type="text" id="wallet" placeholder="0x..." autocomplete="off" spellcheck="false" disabled>
+        </div>
+      </div>
+
+      <p class="err" id="formErr"></p>
+      <div style="margin-top:8px;">
+        <button class="btn solid" id="submitBtn" type="button" disabled>Connect X to continue</button>
+      </div>
+      <p class="note">One X account, one wallet. Duplicate attempts don't earn extra points.</p>
+    </div>
+
+    <div class="done" id="donestate">
+      <span class="badge">ON THE LIST</span>
+      <h1>You're early.</h1>
+      <p class="lede" style="margin:0 auto;">Your wallet is locked in with pre-points. We'll notify you the moment the full whitelist mechanic goes live.</p>
+      <a class="btn" href="world.html#utility" style="display:inline-block;width:auto;margin-top:20px;">See how the full system works</a>
+    </div>
+  </div></section>
+
+</div>
+
+<footer><div class="wrap">
+  <img src="assets/wordmark.png" alt="FOXXY">
+  <div class="flinks">
+    <a href="index.html">Home</a>
+    <a href="world.html#utility">Utility</a>
+  </div>
+  <div class="copy">FOXXY — Launching on Ethereum.</div>
+</div></footer>
+
+<script>
+(function(){
+  var connectBtn=document.getElementById('connectXBtn'),
+      xConnectArea=document.getElementById('xConnectArea'),
+      chkFollow=document.getElementById('chkFollow'),
+      chkNotif=document.getElementById('chkNotif'),
+      walletEl=document.getElementById('wallet'),
+      submitBtn=document.getElementById('submitBtn'),
+      errEl=document.getElementById('formErr'),
+      s1num=document.getElementById('s1num'),
+      formstate=document.querySelector('.taskcard'),
+      donestate=document.getElementById('donestate');
+
+  function showErr(msg){errEl.textContent=msg;errEl.classList.add('show');}
+  function clearErr(){errEl.textContent='';errEl.classList.remove('show');}
+
+  function updateSubmitState(){
+    var ready = !connectBtn && chkFollow.checked && chkNotif.checked && walletEl.value.trim().length>0;
+    submitBtn.disabled = !ready;
+    if(!connectBtn){ submitBtn.textContent = 'Join the waitlist'; }
+  }
+
+  function renderConnected(username){
+    xConnectArea.innerHTML = '<span class="connected-pill"><span class="ok">\u25CF</span> Connected as @'+username+'</span>';
+    connectBtn = null;
+    s1num.classList.add('done'); s1num.textContent='\u2713';
+    chkFollow.disabled = false;
+    chkNotif.disabled = false;
+    walletEl.disabled = false;
+    submitBtn.textContent = 'Join the waitlist';
+    updateSubmitState();
+  }
+
+  // Countdown — pulls a shared deadline from the server so it's the same for everyone
+  var deadline = null;
+  fetch('/api/campaign').then(function(r){return r.json();}).then(function(d){
+    if(d.deadline) deadline = new Date(d.deadline).getTime();
+    if(d.xHandle){
+      var lbl = document.querySelector('label[for="chkFollow"]');
+      if(lbl) lbl.innerHTML = 'I followed <a id="xHandleLink" href="https://x.com/'+d.xHandle+'" target="_blank" rel="noopener">@'+d.xHandle+'</a> on X';
+    }
+    tick();
+  }).catch(function(){
+    // fallback: 24h from page load if the API isn't reachable
+    deadline = Date.now() + 24*60*60*1000;
+    tick();
+  });
+
+  function tick(){
+    if(deadline===null) return;
+    var diff = deadline - Date.now();
+    var noteEl = document.getElementById('countnote');
+    if(diff<=0){
+      document.getElementById('cd-d').textContent='00';
+      document.getElementById('cd-h').textContent='00';
+      document.getElementById('cd-m').textContent='00';
+      document.getElementById('cd-s').textContent='00';
+      noteEl.textContent = 'this window has closed';
+      noteEl.classList.add('ended');
+      return;
+    }
+    var d=Math.floor(diff/86400000);
+    var h=Math.floor((diff%86400000)/3600000);
+    var m=Math.floor((diff%3600000)/60000);
+    var s=Math.floor((diff%60000)/1000);
+    document.getElementById('cd-d').textContent=String(d).padStart(2,'0');
+    document.getElementById('cd-h').textContent=String(h).padStart(2,'0');
+    document.getElementById('cd-m').textContent=String(m).padStart(2,'0');
+    document.getElementById('cd-s').textContent=String(s).padStart(2,'0');
+    setTimeout(tick, 1000);
+  }
+
+  // Check connection state on load (covers ?connected=1 redirect and repeat visits)
+  fetch('/api/me').then(function(r){return r.json();}).then(function(d){
+    if(d.connected){ renderConnected(d.username); }
+  }).catch(function(){});
+
+  // Surface OAuth errors passed back via query string
+  var params = new URLSearchParams(window.location.search);
+  if(params.get('x_error')){
+    var msgMap = {
+      session_expired: 'That connect attempt expired — try again.',
+      state_mismatch: "Couldn't verify that request — try connecting again.",
+      token_failed: 'X declined that connection — try again.',
+      profile_failed: "Couldn't load your X profile — try again.",
+      unexpected: 'Something went wrong connecting to X — try again.',
+      not_configured: 'X connect isn\u2019t set up yet — check back soon.'
+    };
+    showErr(msgMap[params.get('x_error')] || 'Something went wrong connecting to X — try again.');
+  }
+
+  connectBtn.addEventListener('click', function(){
+    window.location.href = '/auth/x/login';
+  });
+
+  chkFollow.addEventListener('change', updateSubmitState);
+  chkNotif.addEventListener('change', updateSubmitState);
+  walletEl.addEventListener('input', updateSubmitState);
+
+  submitBtn.addEventListener('click', function(){
+    clearErr();
+    var wallet = walletEl.value.trim();
+    if(!/^0x[a-fA-F0-9]{40}$/.test(wallet)){
+      showErr("That wallet address doesn't look right — double-check it.");
+      return;
+    }
+    if(!chkFollow.checked || !chkNotif.checked){
+      showErr('Complete both tasks above to join the list.');
+      return;
+    }
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Joining…';
+    fetch('/api/waitlist', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({wallet:wallet, followed:true, notifications:true})
+    }).then(function(r){
+      return r.json().then(function(d){return {ok:r.ok, data:d};});
+    }).then(function(res){
+      if(!res.ok){
+        showErr(res.data && res.data.error ? res.data.error : 'Something went wrong. Try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Join the waitlist';
+        return;
+      }
+      formstate.style.display='none';
+      document.getElementById('taskHeading').style.display='none';
+      donestate.classList.add('show');
+    }).catch(function(){
+      showErr('Network error — check your connection and try again.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Join the waitlist';
+    });
+  });
+})();
+</script>
+</body>
+</html>

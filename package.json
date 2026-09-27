@@ -1,0 +1,18 @@
+{
+  "name": "foxxy-site",
+  "version": "1.0.0",
+  "description": "FOXXY landing site + waitlist API (SQLite + Sign-In with X)",
+  "main": "server.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FOXXY — How it works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1C2528;--ink-2:#222D31;--paper:#EDEEE8;--fur:#E4E0D2;--steel:#8D9AA0;--steel-dim:#5D6C72;--cord:#9A3F35;--line:#33434A;--display:"Shippori Mincho B1",Georgia,serif;--body:"Zen Kaku Gothic New","Helvetica Neue",Arial,sans-serif;}
+*{box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{margin:0;background:var(--ink);color:var(--fur);font-family:var(--body);font-size:17px;line-height:1.75;-webkit-font-smoothing:antialiased;}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(rgba(237,238,232,.09) 1px,transparent 1px);background-size:4px 4px;opacity:.5;}
+.wrap{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:0 28px;}
+a{color:inherit;text-decoration:none;}
+:focus-visible{outline:2px solid var(--paper);outline-offset:3px;}
+nav{border-bottom:1px solid var(--line);}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:68px;}
+nav img{height:26px;}
+.navlinks{display:flex;gap:26px;font-size:14px;letter-spacing:.06em;color:var(--steel);}
+.navlinks a:hover{color:var(--paper);}
+.btn{display:inline-block;padding:13px 26px;font-size:15px;font-weight:500;border:1px solid var(--paper);color:var(--paper);background:none;transition:background .18s,color .18s;cursor:pointer;}
+.btn:hover{background:var(--paper);color:var(--ink);}
+.btn.solid{background:var(--cord);border-color:var(--cord);color:#fff;}
+.btn.solid:hover{background:#B04B40;border-color:#B04B40;}
+section{padding:78px 0;border-bottom:1px solid var(--line);}
+h2{font-family:var(--display);font-weight:800;font-size:36px;line-height:1.25;color:var(--paper);margin:0 0 16px;}
+.lede{font-size:19px;color:var(--fur);max-width:60ch;margin:0 0 14px;}
+p.body{color:var(--steel);max-width:62ch;margin:0 0 16px;}
+
+/* ── ERA SCAN ────────────────────────────────────── */
+.era-scan{margin-top:44px;display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--line);}
+.es-card{padding:28px 22px 30px;border-right:1px solid var(--line);position:relative;overflow:hidden;}
+.es-card:last-child{border-right:none;}
+.es-card::before{content:"";position:absolute;inset:0;opacity:0;transition:opacity .3s;}
+.es-card:hover::before{opacity:1;}
+.es-card.c1::before{background:linear-gradient(135deg,rgba(100,80,50,.18),transparent);}
+.es-card.c2::before{background:linear-gradient(135deg,rgba(60,90,80,.18),transparent);}
+.es-card.c3::before{background:linear-gradient(135deg,rgba(30,80,100,.18),transparent);}
+.es-card.c4::before{background:linear-gradient(135deg,rgba(120,40,120,.18),transparent);}
+.es-num{font-family:var(--display);font-size:13px;letter-spacing:.18em;color:var(--cord);margin-bottom:10px;}
+.es-card h3{font-family:var(--display);font-size:20px;color:var(--paper);margin:0 0 12px;font-weight:600;}
+.es-card .trait{font-size:14px;color:var(--steel);margin:0 0 6px;padding-left:14px;position:relative;}
+.es-card .trait::before{content:"—";position:absolute;left:0;color:var(--cord);}
+.es-vid{margin:-28px -22px 22px;aspect-ratio:1/1;overflow:hidden;}
+.es-vid video{width:100%;height:100%;object-fit:cover;display:block;
+  -webkit-mask-image:linear-gradient(to bottom,#000 55%,transparent 100%);
+  mask-image:linear-gradient(to bottom,#000 55%,transparent 100%);}
+
+/* ── POINTS ──────────────────────────────────────── */
+.points-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:40px;}
+.pt{background:var(--ink-2);border:1px solid var(--line);padding:24px 20px 26px;}
+.pt-num{font-family:var(--display);font-size:13px;color:var(--cord);letter-spacing:.18em;margin-bottom:12px;}
+.pt h3{font-family:var(--display);font-size:18px;color:var(--paper);margin:0 0 8px;font-weight:600;}
+.pt p{font-size:15px;color:var(--steel);margin:0 0 10px;line-height:1.6;}
+.pt .score{font-size:13px;color:var(--steel-dim);border-top:1px solid var(--line);padding-top:10px;margin-top:4px;}
+
+/* ── ANTI-GAMING ─────────────────────────────────── */
+.ag-row{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px;}
+.ag{border-left:2px solid var(--cord);padding:4px 0 4px 18px;}
+.ag h3{font-family:var(--display);font-size:17px;color:var(--paper);margin:0 0 6px;font-weight:600;}
+.ag p{font-size:15px;color:var(--steel);margin:0;line-height:1.6;}
+
+/* ── TIERS ───────────────────────────────────────── */
+.tier-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:36px;}
+.tier{border-top:2px solid var(--cord);padding-top:16px;}
+.tier-label{font-family:var(--display);font-size:17px;color:var(--paper);margin-bottom:6px;display:block;}
+.tier-desc{font-size:14px;color:var(--steel);display:block;margin-bottom:8px;}
+.tier-badge{font-size:12px;letter-spacing:.1em;color:var(--cord);border:1px solid var(--cord);display:inline-block;padding:3px 10px;}
+
+/* ── CTA ─────────────────────────────────────────── */
+.cta-band{text-align:center;padding:90px 0;}
+.cta-band h2{font-size:44px;margin-bottom:16px;}
+.cta-band p{color:var(--steel);max-width:48ch;margin:0 auto 36px;}
+
+footer{padding:34px 0 46px;}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;}
+footer img{height:22px;opacity:.85;}
+.flinks{display:flex;gap:22px;font-size:14px;color:var(--steel);}
+.flinks a:hover{color:var(--paper);}
+.copy{font-size:13px;color:var(--steel-dim);width:100%;}
+
+@media(max-width:900px){
+  .era-scan{grid-template-columns:repeat(2,1fr);}
+  .es-card:nth-child(2){border-right:none;}
+  .es-card:nth-child(1),.es-card:nth-child(2){border-bottom:1px solid var(--line);}
+  .points-grid{grid-template-columns:repeat(2,1fr);}
+  .ag-row{grid-template-columns:1fr;}
+  .tier-grid{grid-template-columns:repeat(2,1fr);}
+  h2{font-size:28px;}.cta-band h2{font-size:34px;}
+}
+@media(max-width:560px){
+  .era-scan{grid-template-columns:1fr;}
+  .es-card{border-right:none;border-bottom:1px solid var(--line);}
+  .es-card:last-child{border-bottom:none;}
+  .points-grid{grid-template-columns:1fr;}
+  .tier-grid{grid-template-columns:1fr;}
+  .navlinks{display:none;}
+  section{padding:56px 0;}
+}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a href="index.html"><img src="assets/wordmark.png" alt="FOXXY"></a>
+  <div class="navlinks">
+    <a href="index.html">Home</a>
+    <a href="#scan">Your fox</a>
+    <a href="#points">Points</a>
+    <a href="#tiers">Tiers</a>
+    <a href="waitlist.html">Waitlist</a>
+  </div>
+</div></nav>
+
+<!-- ERA SCAN -->
+<section id="scan"><div class="wrap">
+  <h2>Your wallet decides your fox</h2>
+  <p class="lede">Connect your wallet and we scan your on-chain history. Your holdings, volume, and conviction place you in one of four eras — each with its own fox, its own look, and its own standing.</p>
+  <p class="body">You don't choose. Your history does.</p>
+  <div class="era-scan">
+    <div class="es-card c1">
+      <div class="es-vid">
+        <video autoplay muted loop playsinline preload="none" poster="assets/era1-poster.jpg">
+          <source src="assets/era1.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="es-num">ERA I</div>
+      <h3>Ancient warriors</h3>
+      <p class="trait">Long-term NFT holder</p>
+      <p class="trait">Low trade frequency</p>
+      <p class="trait">Strong conviction, few projects</p>
+    </div>
+    <div class="es-card c2">
+      <div class="es-vid">
+        <video autoplay muted loop playsinline preload="none" poster="assets/era2-poster.jpg">
+          <source src="assets/era2.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="es-num">ERA II</div>
+      <h3>Modern operators</h3>
+      <p class="trait">Active marketplace trader</p>
+      <p class="trait">High verified volume</p>
+      <p class="trait">Strategic, moves with precision</p>
+    </div>
+    <div class="es-card c3">
+      <div class="es-vid">
+        <video autoplay muted loop playsinline preload="none" poster="assets/era3-poster.jpg">
+          <source src="assets/era3.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="es-num">ERA III</div>
+      <h3>Digital minds</h3>
+      <p class="trait">Broad collection diversity</p>
+      <p class="trait">Active minter across projects</p>
+      <p class="trait">Explores widely, holds selectively</p>
+    </div>
+    <div class="es-card c4">
+      <div class="es-vid">
+        <video autoplay muted loop playsinline preload="none" poster="assets/era4-poster.jpg">
+          <source src="assets/era4.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="es-num">ERA IV</div>
+      <h3>Cyber legends</h3>
+      <p class="trait">Top-tier wallet standing</p>
+      <p class="trait">Rare holdings, high volume</p>
+      <p class="trait">Among the most committed in the space</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- HOW POINTS ARE EARNED -->
+<section id="points"><div class="wrap">
+  <h2>How your score is built</h2>
+  <p class="lede">Your wallet earns points across six categories. Highest-ranked wallets get guaranteed mint spots. Everyone else is ranked into tiers.</p>
+  <div class="points-grid">
+    <div class="pt">
+      <div class="pt-num">01</div>
+      <h3>Curated project holdings</h3>
+      <p>Hold NFTs from verified Ethereum projects. Rarer pieces score higher — floor to top 1%.</p>
+      <div class="score">Floor = 10 pts · Top 10% = 25 pts · Top 1% = 50 pts</div>
+    </div>
+    <div class="pt">
+      <div class="pt-num">02</div>
+      <h3>Trading volume</h3>
+      <p>Cumulative ETH traded across buys and sells. Marketplace-verified only — wash trades excluded.</p>
+      <div class="score">1 pt per 0.1 ETH of verified volume</div>
+    </div>
+    <div class="pt">
+      <div class="pt-num">03</div>
+      <h3>Holding duration</h3>
+      <p>No points under the minimum hold window. Full points only after you've crossed the threshold.</p>
+      <div class="score">Gate: 14–30 days minimum hold</div>
+    </div>
+    <div class="pt">
+      <div class="pt-num">04</div>
+      <h3>Collection diversity</h3>
+      <p>Holding across multiple curated projects earns a flat bonus per additional project.</p>
+      <div class="score">+5 pts per project beyond the first · capped</div>
+    </div>
+    <div class="pt">
+      <div class="pt-num">05</div>
+      <h3>Mint activity</h3>
+      <p>Minting directly from project contracts earns micro-points, capped per project to stop farming.</p>
+      <div class="score">2 pts per verified mint · capped per project</div>
+    </div>
+    <div class="pt">
+      <div class="pt-num">06</div>
+      <h3>Featured project boost</h3>
+      <p>A rotating project is added to the curated list periodically, carrying a time-limited multiplier.</p>
+      <div class="score">1.5× on activity tied to featured project</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ANTI-GAMING -->
+<section id="anticheat"><div class="wrap">
+  <h2>Built to stay honest</h2>
+  <p class="body">A points system is only as good as its ability to resist manipulation. Three layers keep it clean.</p>
+  <div class="ag-row">
+    <div class="ag">
+      <h3>Wallet verification</h3>
+      <p>Sign-In with Ethereum ties your score to your actual wallet. Nobody can claim a whale wallet that isn't theirs.</p>
+    </div>
+    <div class="ag">
+      <h3>Wash-trade filtering</h3>
+      <p>Sales flagged by Reservoir and OpenSea as wash trades are excluded. Same-cluster buy/sell loops don't count toward volume.</p>
+    </div>
+    <div class="ag">
+      <h3>Sybil detection</h3>
+      <p>Wallets sharing funding sources or transaction patterns are clustered and capped — one person can't run ten wallets for ten spots.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- TIERS -->
+<section id="tiers"><div class="wrap">
+  <h2>How spots are awarded</h2>
+  <p class="body">The leaderboard is public. Paste your address and see exactly where you stand and what it would take to move up.</p>
+  <div class="tier-grid">
+    <div class="tier">
+      <span class="tier-label">Top wallets</span>
+      <span class="tier-desc">Highest-scoring wallets at snapshot time</span>
+      <span class="tier-badge">GUARANTEED SPOT</span>
+    </div>
+    <div class="tier">
+      <span class="tier-label">Tier 1</span>
+      <span class="tier-desc">Strong standing, early access window</span>
+      <span class="tier-badge">PRIORITY ACCESS</span>
+    </div>
+    <div class="tier">
+      <span class="tier-label">Tier 2</span>
+      <span class="tier-desc">Qualified wallets, standard window</span>
+      <span class="tier-badge">STANDARD ACCESS</span>
+    </div>
+    <div class="tier">
+      <span class="tier-label">Public mint</span>
+      <span class="tier-desc">Open to everyone — first come first served</span>
+      <span class="tier-badge">FCFS</span>
+    </div>
+  </div>
+</div></section>
+
+<!-- CTA -->
+<div class="cta-band"><div class="wrap">
+  <h2>Get your spot early</h2>
+  <p>Join the waitlist before it closes. Early members earn pre-points before the utility goes live.</p>
+  <a class="btn solid" href="waitlist.html">Join the waitlist</a>
+</div></div>
+
+<footer><div class="wrap">
+  <img src="assets/wordmark.png" alt="FOXXY">
+  <div class="flinks">
+    <a href="index.html">Home</a>
+    <a href="#scan">Your fox</a>
+    <a href="#points">Points</a>
+    <a href="waitlist.html">Waitlist</a>
+  </div>
+  <div class="copy">FOXXY — Launching on Ethereum.</div>
+</div></footer>
+
+<script>
+var vids=document.querySelectorAll('.es-vid video');
+if('IntersectionObserver' in window){
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){var v=e.target;if(!v.src){v.src=v.querySelector('source').src;}v.play();io.unobserve(v);}
+    });
+  },{threshold:.2});
+  vids.forEach(function(v){io.observe(v);});
+}else{vids.forEach(function(v){v.play();});}
+</script>
+</body>
+</html>

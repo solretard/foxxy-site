@@ -4,7 +4,7 @@
   "description": "FOXXY landing site + waitlist API (SQLite + Sign-In with X)",
   "main": "server.js",
   "engines": {
-    "node": ">=18"
+    "node": "20.x"
   },
   "scripts": {
     "start": "node server.js"

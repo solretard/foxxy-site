@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/auth/x/login",    "destination": "/api/auth/x/login" },
+    { "source": "/auth/x/callback", "destination": "/api/auth/x/callback" }
+  ]
+}

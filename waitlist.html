@@ -195,6 +195,31 @@ footer img{height:22px;opacity:.85;}
             <input type="checkbox" id="chkNotif" disabled>
             <label for="chkNotif">I turned on post notifications (tap the bell on the profile)</label>
           </div>
+          <div class="checkrow">
+            <input type="checkbox" id="chkLike" disabled>
+            <label for="chkLike">I liked the <a id="likePostLink" href="https://x.com/Foxxy_ethn" target="_blank" rel="noopener">launch post</a> on X</label>
+          </div>
+          <div class="checkrow">
+            <input type="checkbox" id="chkRepost" disabled>
+            <label for="chkRepost">I reposted the <a id="repostPostLink" href="https://x.com/Foxxy_ethn" target="_blank" rel="noopener">launch post</a> on X</label>
+          </div>
+          <div class="checkrow" style="flex-direction:column;gap:8px;align-items:flex-start;">
+            <label style="font-size:14.5px;color:var(--fur);">I left a comment predicting which era drops first</label>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:2px;">
+              <label style="display:flex;align-items:center;gap:6px;font-size:14px;color:var(--steel);cursor:pointer;">
+                <input type="radio" name="eraVote" value="I" id="eraI" disabled style="accent-color:var(--cord);"> Era I
+              </label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:14px;color:var(--steel);cursor:pointer;">
+                <input type="radio" name="eraVote" value="II" id="eraII" disabled style="accent-color:var(--cord);"> Era II
+              </label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:14px;color:var(--steel);cursor:pointer;">
+                <input type="radio" name="eraVote" value="III" id="eraIII" disabled style="accent-color:var(--cord);"> Era III
+              </label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:14px;color:var(--steel);cursor:pointer;">
+                <input type="radio" name="eraVote" value="IV" id="eraIV" disabled style="accent-color:var(--cord);"> Era IV
+              </label>
+            </div>
+          </div>
           <p class="sub">These are self-reported for now. Spots are subject to verification before final points are awarded.</p>
         </div>
       </div>
@@ -240,6 +265,9 @@ footer img{height:22px;opacity:.85;}
       xConnectArea=document.getElementById('xConnectArea'),
       chkFollow=document.getElementById('chkFollow'),
       chkNotif=document.getElementById('chkNotif'),
+      chkLike=document.getElementById('chkLike'),
+      chkRepost=document.getElementById('chkRepost'),
+      eraRadios=document.querySelectorAll('input[name="eraVote"]'),
       walletEl=document.getElementById('wallet'),
       submitBtn=document.getElementById('submitBtn'),
       errEl=document.getElementById('formErr'),
@@ -247,11 +275,16 @@ footer img{height:22px;opacity:.85;}
       formstate=document.querySelector('.taskcard'),
       donestate=document.getElementById('donestate');
 
+  function getSelectedEra(){
+    for(var i=0;i<eraRadios.length;i++){ if(eraRadios[i].checked) return eraRadios[i].value; }
+    return '';
+  }
+
   function showErr(msg){errEl.textContent=msg;errEl.classList.add('show');}
   function clearErr(){errEl.textContent='';errEl.classList.remove('show');}
 
   function updateSubmitState(){
-    var ready = !connectBtn && chkFollow.checked && chkNotif.checked && walletEl.value.trim().length>0;
+    var ready = !connectBtn && chkFollow.checked && chkNotif.checked && chkLike.checked && chkRepost.checked && getSelectedEra() !== '' && walletEl.value.trim().length>0;
     submitBtn.disabled = !ready;
     if(!connectBtn){ submitBtn.textContent = 'Join the waitlist'; }
   }
@@ -262,6 +295,9 @@ footer img{height:22px;opacity:.85;}
     s1num.classList.add('done'); s1num.textContent='\u2713';
     chkFollow.disabled = false;
     chkNotif.disabled = false;
+    chkLike.disabled = false;
+    chkRepost.disabled = false;
+    eraRadios.forEach(function(r){ r.disabled = false; });
     walletEl.disabled = false;
     submitBtn.textContent = 'Join the waitlist';
     updateSubmitState();
@@ -331,17 +367,25 @@ footer img{height:22px;opacity:.85;}
 
   chkFollow.addEventListener('change', updateSubmitState);
   chkNotif.addEventListener('change', updateSubmitState);
+  chkLike.addEventListener('change', updateSubmitState);
+  chkRepost.addEventListener('change', updateSubmitState);
+  eraRadios.forEach(function(r){ r.addEventListener('change', updateSubmitState); });
   walletEl.addEventListener('input', updateSubmitState);
 
   submitBtn.addEventListener('click', function(){
     clearErr();
     var wallet = walletEl.value.trim();
+    var era = getSelectedEra();
     if(!/^0x[a-fA-F0-9]{40}$/.test(wallet)){
       showErr("That wallet address doesn't look right — double-check it.");
       return;
     }
-    if(!chkFollow.checked || !chkNotif.checked){
-      showErr('Complete both tasks above to join the list.');
+    if(!chkFollow.checked || !chkNotif.checked || !chkLike.checked || !chkRepost.checked){
+      showErr('Complete all tasks above to join the list.');
+      return;
+    }
+    if(!era){
+      showErr('Select which era you think drops first.');
       return;
     }
     submitBtn.disabled = true;
@@ -349,7 +393,7 @@ footer img{height:22px;opacity:.85;}
     fetch('/api/waitlist', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({wallet:wallet, followed:true, notifications:true})
+      body: JSON.stringify({wallet:wallet, followed:true, notifications:true, liked:true, reposted:true, comment_era:era})
     }).then(function(r){
       return r.json().then(function(d){return {ok:r.ok, data:d};});
     }).then(function(res){

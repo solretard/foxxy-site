@@ -139,5 +139,53 @@ nav img{height:26px;}
   marks();type();
 })();
 </script>
+
+<!-- ── Background audio ───────────────────────────────────────────────── -->
+<audio id="bgAudio" loop preload="auto">
+  <source src="assets/ambient.mp3" type="audio/mpeg">
+</audio>
+
+<button id="soundBtn" aria-label="Toggle sound" title="Toggle sound" style="
+  position:fixed;bottom:24px;right:24px;z-index:999;
+  width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,0.15);
+  background:rgba(26,26,26,0.75);backdrop-filter:blur(8px);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:16px;color:#fff;transition:border-color .2s,opacity .2s;opacity:0.7;
+">🔇</button>
+
+<script>
+(function(){
+  var audio = document.getElementById('bgAudio');
+  var btn   = document.getElementById('soundBtn');
+  var muted = localStorage.getItem('foxxy_sound') !== 'on';
+
+  function apply(){
+    audio.muted = muted;
+    btn.textContent = muted ? '🔇' : '🔊';
+    btn.style.opacity = muted ? '0.5' : '0.85';
+    if(!muted) audio.play().catch(function(){});
+  }
+
+  // Try to play on first user gesture anywhere on the page
+  function onFirstGesture(){
+    audio.play().catch(function(){});
+    document.removeEventListener('click', onFirstGesture);
+    document.removeEventListener('touchstart', onFirstGesture);
+  }
+  if(!muted){
+    document.addEventListener('click', onFirstGesture);
+    document.addEventListener('touchstart', onFirstGesture);
+  }
+
+  btn.addEventListener('click', function(e){
+    e.stopPropagation();
+    muted = !muted;
+    localStorage.setItem('foxxy_sound', muted ? 'off' : 'on');
+    apply();
+  });
+
+  apply();
+})();
+</script>
 </body>
 </html>

@@ -96,7 +96,6 @@ nav img{height:26px;}
         <div class="dots" id="dots"></div>
         <div class="navrow">
           <button class="nb back" id="back" type="button" disabled>back</button>
-          <button class="nb skiplink" id="skip" type="button">skip</button>
           <button class="nb nxt" id="next" type="button">next</button>
         </div>
       </div>
@@ -121,7 +120,7 @@ nav img{height:26px;}
   ];
   var out=document.getElementById('typed'),dots=document.getElementById('dots'),
       next=document.getElementById('next'),back=document.getElementById('back'),
-      skip=document.getElementById('skip'),nav=document.querySelector('.intronav'),
+      nav=document.querySelector('.intronav'),
       end=document.getElementById('introend'),
       reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var i=0,timer=null,typing=false;
@@ -134,8 +133,7 @@ nav img{height:26px;}
   function done(){nav.style.display='none';out.textContent=lines[lines.length-1];end.classList.add('show');}
   next.addEventListener('click',function(){if(typing){finish();return;}if(i>=lines.length-1){done();return;}i++;marks();type();});
   back.addEventListener('click',function(){if(i<=0)return;i--;marks();type();});
-  skip.addEventListener('click',done);
-  if(reduce){lines.forEach(function(l,n){if(n<lines.length-1)return;out.textContent=l;});end.classList.add('show');nav.style.display='none';return;}
+  if(reduce){out.textContent=lines[lines.length-1];end.classList.add('show');nav.style.display='none';return;}
   marks();type();
 })();
 </script>

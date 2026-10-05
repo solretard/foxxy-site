@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "FOXXY landing site + waitlist API (Neon Postgres + Sign-In with X)",
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",

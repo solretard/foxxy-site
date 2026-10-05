@@ -142,7 +142,7 @@ footer img{height:22px;opacity:.85;}
       <div class="cbox"><span class="num" id="cd-m">--</span><span class="lbl">MIN</span></div>
       <div class="cbox"><span class="num" id="cd-s">--</span><span class="lbl">SEC</span></div>
     </div>
-    <p class="countnote" id="countnote">until this window closes</p>
+    <p class="countnote" id="countnote">coming soon</p>
   </div></div>
 
   <!-- BENEFITS -->
@@ -304,18 +304,19 @@ footer img{height:22px;opacity:.85;}
     updateSubmitState();
   }
 
-  // Countdown — pulls a shared deadline from the server so it's the same for everyone
-  var deadline = null;
+  // Countdown — hardcoded deadline; API only overrides if it returns a *future* date
+  var deadline = new Date('2026-10-08T23:59:00+01:00').getTime(); // WAT — update to match your X post time
   fetch('/api/campaign').then(function(r){return r.json();}).then(function(d){
-    if(d.deadline) deadline = new Date(d.deadline).getTime();
+    if(d.deadline){
+      var apiDeadline = new Date(d.deadline).getTime();
+      if(apiDeadline > Date.now()) deadline = apiDeadline; // only use API if it hasn't passed
+    }
     if(d.xHandle){
       var lbl = document.querySelector('label[for="chkFollow"]');
       if(lbl) lbl.innerHTML = 'I followed <a id="xHandleLink" href="https://x.com/'+d.xHandle+'" target="_blank" rel="noopener">@'+d.xHandle+'</a> on X';
     }
     tick();
   }).catch(function(){
-    // fallback: 24h from page load if the API isn't reachable
-    deadline = Date.now() + 24*60*60*1000;
     tick();
   });
 
@@ -324,12 +325,11 @@ footer img{height:22px;opacity:.85;}
     var diff = deadline - Date.now();
     var noteEl = document.getElementById('countnote');
     if(diff<=0){
-      document.getElementById('cd-d').textContent='00';
-      document.getElementById('cd-h').textContent='00';
-      document.getElementById('cd-m').textContent='00';
-      document.getElementById('cd-s').textContent='00';
-      noteEl.textContent = 'this window has closed';
-      noteEl.classList.add('ended');
+      document.getElementById('cd-d').textContent='--';
+      document.getElementById('cd-h').textContent='--';
+      document.getElementById('cd-m').textContent='--';
+      document.getElementById('cd-s').textContent='--';
+      noteEl.textContent = 'coming soon';
       return;
     }
     var d=Math.floor(diff/86400000);

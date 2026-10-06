@@ -305,7 +305,7 @@ footer img{height:22px;opacity:.85;}
   }
 
   // Countdown — hardcoded deadline; API only overrides if it returns a *future* date
-  var deadline = new Date('2026-10-08T23:59:00+01:00').getTime(); // WAT — update to match your X post time
+  var deadline = new Date('2026-10-07T18:00:00+01:00').getTime(); // WAT — 24h from 6pm Oct 6 post
   fetch('/api/campaign').then(function(r){return r.json();}).then(function(d){
     if(d.deadline){
       var apiDeadline = new Date(d.deadline).getTime();
@@ -417,7 +417,7 @@ footer img{height:22px;opacity:.85;}
 </script>
 
 <!-- ── Background audio ───────────────────────────────────────────────── -->
-<audio id="bgAudio" loop preload="auto">
+<audio id="bgAudio" loop preload="auto" autoplay>
   <source src="assets/ambient.mp3" type="audio/mpeg">
 </audio>
 
@@ -433,7 +433,7 @@ footer img{height:22px;opacity:.85;}
 (function(){
   var audio = document.getElementById('bgAudio');
   var btn   = document.getElementById('soundBtn');
-  var muted = localStorage.getItem('foxxy_sound') !== 'on';
+  var muted = localStorage.getItem('foxxy_sound') === 'off';
 
   function apply(){
     audio.muted = muted;
@@ -442,15 +442,15 @@ footer img{height:22px;opacity:.85;}
     if(!muted) audio.play().catch(function(){});
   }
 
+  // Try autoplay immediately; fallback to first gesture if browser blocks it
+  audio.play().catch(function(){});
   function onFirstGesture(){
-    audio.play().catch(function(){});
+    if(!muted) audio.play().catch(function(){});
     document.removeEventListener('click', onFirstGesture);
     document.removeEventListener('touchstart', onFirstGesture);
   }
-  if(!muted){
-    document.addEventListener('click', onFirstGesture);
-    document.addEventListener('touchstart', onFirstGesture);
-  }
+  document.addEventListener('click', onFirstGesture);
+  document.addEventListener('touchstart', onFirstGesture);
 
   btn.addEventListener('click', function(e){
     e.stopPropagation();

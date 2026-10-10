@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/png" href="assets/fox.png">
+<title>FOXXY — Wallet Score</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1C2528;--ink-2:#222D31;--paper:#EDEEE8;--fur:#E4E0D2;
+  --steel:#8D9AA0;--steel-dim:#5D6C72;--cord:#9A3F35;--line:#33434A;
+  --display:"Shippori Mincho B1",Georgia,serif;
+  --body:"Zen Kaku Gothic New","Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;background:var(--ink);color:var(--fur);font-family:var(--body);font-size:17px;line-height:1.75;-webkit-font-smoothing:antialiased;}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(rgba(237,238,232,.09) 1px,transparent 1px);background-size:4px 4px;opacity:.5;}
+.wrap{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:0 28px;}
+a{color:inherit;text-decoration:none;}
+:focus-visible{outline:2px solid var(--paper);outline-offset:3px;}
+
+/* nav */
+nav{border-bottom:1px solid var(--line);}
+nav .wrap{max-width:1120px;display:flex;align-items:center;justify-content:space-between;height:68px;}
+nav img{height:26px;}
+.navlinks{display:flex;gap:26px;font-size:14px;letter-spacing:.06em;color:var(--steel);}
+.navlinks a:hover{color:var(--paper);}
+@media(max-width:560px){.navlinks{display:none;}}
+
+/* hero */
+.hero{padding:64px 0 52px;text-align:center;border-bottom:1px solid var(--line);}
+.badge-label{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.14em;color:var(--cord);border:1px solid var(--cord);padding:6px 16px;margin-bottom:28px;}
+.badge-label .dot{width:6px;height:6px;border-radius:50%;background:var(--cord);animation:pulse 1.4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(1.4);}}
+
+h1{font-family:var(--display);font-weight:800;font-size:38px;line-height:1.2;color:var(--paper);margin:0 0 14px;}
+.lede{font-size:16px;color:var(--steel);max-width:50ch;margin:0 auto;}
+@media(max-width:560px){h1{font-size:27px;}}
+
+/* score form panel */
+section.panel{padding:56px 0;border-bottom:1px solid var(--line);}
+
+.score-form{max-width:520px;margin:0 auto;}
+.input-row{display:flex;gap:0;}
+.input-row input[type=text]{
+  flex:1;background:var(--ink-2);border:1px solid var(--line);border-right:none;
+  color:var(--paper);padding:14px 16px;font-family:var(--body);font-size:15px;
+  transition:border-color .18s;
+}
+.input-row input[type=text]::placeholder{color:var(--steel-dim);}
+.input-row input[type=text]:focus{outline:none;border-color:var(--cord);}
+.input-row .btn{flex-shrink:0;padding:14px 26px;font-size:15px;font-weight:500;border:1px solid var(--paper);color:var(--paper);background:none;cursor:pointer;white-space:nowrap;transition:background .18s,color .18s;}
+.input-row .btn:hover{background:var(--paper);color:var(--ink);}
+.input-row .btn.solid{background:var(--cord);border-color:var(--cord);color:#fff;}
+.input-row .btn.solid:hover{background:#B04B40;border-color:#B04B40;}
+.input-row .btn:disabled{opacity:.45;cursor:not-allowed;}
+.input-row .btn:disabled:hover{background:var(--cord);color:#fff;border-color:var(--cord);}
+.err{font-size:14px;color:#D97A6E;margin:12px 0 0;display:none;}
+.err.show{display:block;}
+
+/* results */
+.results{margin-top:36px;display:none;}
+.results.show{display:block;}
+
+.score-card{background:var(--ink-2);border:1px solid var(--cord);padding:30px 28px;margin-bottom:24px;text-align:center;}
+.score-card .score-num{font-family:var(--display);font-size:72px;font-weight:800;color:var(--paper);line-height:1;display:block;}
+.score-card .score-lbl{font-size:13px;letter-spacing:.14em;color:var(--steel);margin-top:8px;display:block;}
+.score-card .rank-line{margin-top:16px;font-size:14px;color:var(--steel);}
+.score-card .rank-line span{color:var(--cord);font-weight:600;}
+
+.breakdown-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;}
+@media(max-width:500px){.breakdown-grid{grid-template-columns:1fr;}}
+.bcard{background:var(--ink-2);border:1px solid var(--line);padding:18px 16px;}
+.bcard .bname{font-size:11px;letter-spacing:.12em;color:var(--steel);margin-bottom:8px;}
+.bcard .bval{font-family:var(--display);font-size:26px;font-weight:800;color:var(--paper);line-height:1;}
+.bcard .bsub{font-size:12px;color:var(--steel-dim);margin-top:4px;}
+
+.projects-held{margin-bottom:24px;}
+.projects-held h3{font-family:var(--display);font-size:15px;color:var(--paper);margin:0 0 12px;font-weight:600;}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;}
+.pill{font-size:12px;letter-spacing:.08em;color:var(--cord);border:1px solid var(--cord);padding:4px 12px;background:rgba(154,63,53,.08);}
+.pill-none{font-size:13px;color:var(--steel-dim);}
+
+.rescore-note{font-size:12.5px;color:var(--steel-dim);text-align:center;margin-top:6px;}
+
+/* leaderboard */
+.lb-section{padding:56px 0;}
+h2{font-family:var(--display);font-weight:800;font-size:26px;color:var(--paper);margin:0 0 22px;text-align:center;}
+.lb-head{display:grid;grid-template-columns:40px 1fr auto;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);font-size:11px;letter-spacing:.1em;color:var(--steel);}
+.lb-row{display:grid;grid-template-columns:40px 1fr auto;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);align-items:center;transition:background .12s;}
+.lb-row:hover{background:var(--ink-2);}
+.lb-row.top3{border-left:2px solid var(--cord);}
+.lb-rank{font-family:var(--display);font-size:15px;color:var(--steel);font-weight:600;}
+.lb-rank.gold{color:#C4993A;}
+.lb-rank.silver{color:#8D9AA0;}
+.lb-rank.bronze{color:#A0704A;}
+.lb-wallet{font-size:13.5px;color:var(--fur);font-family:monospace;letter-spacing:.02em;}
+.lb-score{font-family:var(--display);font-size:16px;color:var(--paper);font-weight:800;text-align:right;}
+.lb-projects{font-size:11px;color:var(--steel-dim);margin-top:2px;}
+.lb-empty{text-align:center;padding:40px 20px;color:var(--steel);font-size:14px;}
+.lb-loading{text-align:center;padding:40px 20px;color:var(--steel-dim);font-size:14px;animation:flicker 1.2s ease-in-out infinite;}
+@keyframes flicker{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+/* scoring breakdown info */
+.criteria-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:0;}
+@media(max-width:700px){.criteria-grid{grid-template-columns:1fr;}}
+.crit{background:var(--ink-2);border:1px solid var(--line);padding:20px 18px;}
+.crit .cn{font-family:var(--display);font-size:11px;color:var(--cord);letter-spacing:.16em;margin-bottom:8px;}
+.crit h3{font-family:var(--display);font-size:15px;color:var(--paper);margin:0 0 6px;font-weight:600;}
+.crit p{font-size:13px;color:var(--steel);margin:0;line-height:1.55;}
+
+/* footer */
+footer{padding:34px 0 46px;border-top:1px solid var(--line);}
+footer .wrap{max-width:1120px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;}
+footer img{height:22px;opacity:.85;}
+.flinks{display:flex;gap:22px;font-size:14px;color:var(--steel);}
+.flinks a:hover{color:var(--paper);}
+.copy{font-size:13px;color:var(--steel-dim);width:100%;}
+
+/* spinner */
+.spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a href="index.html"><img src="assets/wordmark.png" alt="FOXXY"></a>
+  <div class="navlinks">
+    <a href="index.html">Home</a>
+    <a href="world.html#utility">Utility</a>
+    <a href="waitlist.html">Whitelist</a>
+  </div>
+</div></nav>
+
+<div id="page">
+
+  <!-- HERO -->
+  <div class="hero"><div class="wrap">
+    <div class="badge-label"><span class="dot"></span>ON-CHAIN SCORE</div>
+    <h1>See where your wallet stands.</h1>
+    <p class="lede">Paste your ETH wallet below. We scan your NFT holdings and history to calculate your FOXXY score — higher scores get priority whitelist access.</p>
+  </div></div>
+
+  <!-- SCORE CHECKER -->
+  <section class="panel"><div class="wrap">
+    <div class="score-form">
+      <div class="input-row">
+        <input type="text" id="walletInput" placeholder="0x..." autocomplete="off" spellcheck="false">
+        <button class="btn solid" id="checkBtn" onclick="checkScore()">Check Score</button>
+      </div>
+      <p class="err" id="errMsg"></p>
+
+      <!-- Results -->
+      <div class="results" id="results">
+
+        <div class="score-card" id="scoreCard">
+          <span class="score-num" id="scoreNum">0</span>
+          <span class="score-lbl">FOXXY SCORE</span>
+          <p class="rank-line">Ranked <span id="rankSpan">#—</span> of <span id="totalSpan">—</span> wallets scored</p>
+        </div>
+
+        <div class="breakdown-grid">
+          <div class="bcard">
+            <div class="bname">HOLDINGS</div>
+            <div class="bval" id="bHoldings">0</div>
+            <div class="bsub">curated project pts</div>
+          </div>
+          <div class="bcard">
+            <div class="bname">DURATION</div>
+            <div class="bval" id="bDuration">0</div>
+            <div class="bsub">long-hold bonus</div>
+          </div>
+          <div class="bcard">
+            <div class="bname">DIVERSITY</div>
+            <div class="bval" id="bDiversity">0</div>
+            <div class="bsub">multi-collection pts</div>
+          </div>
+          <div class="bcard">
+            <div class="bname">MINTS</div>
+            <div class="bval" id="bMints">0</div>
+            <div class="bsub">verified mint activity</div>
+          </div>
+          <div class="bcard">
+            <div class="bname">VOLUME</div>
+            <div class="bval" id="bVolume">0</div>
+            <div class="bsub" id="bVolumeEth">ETH activity pts</div>
+          </div>
+        </div>
+
+        <div class="projects-held" id="projectsWrap">
+          <h3>Curated projects held</h3>
+          <div class="pill-row" id="projectPills"></div>
+        </div>
+
+        <p class="rescore-note">Score updates each time you check. On-chain data via Alchemy.</p>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- HOW YOUR SCORE IS BUILT -->
+  <section class="panel"><div class="wrap">
+    <h2>How your score is built</h2>
+    <div class="criteria-grid">
+      <div class="crit">
+        <div class="cn">01</div>
+        <h3>Curated Holdings</h3>
+        <p>Points for holding NFTs from FOXXY's curated list of blue-chip collections. Azuki gets a 1.5× featured boost.</p>
+      </div>
+      <div class="crit">
+        <div class="cn">02</div>
+        <h3>Holding Duration</h3>
+        <p>Bonus awarded for each curated project held for 30+ days — rewarding diamond hands over flippers.</p>
+      </div>
+      <div class="crit">
+        <div class="cn">03</div>
+        <h3>Collection Diversity</h3>
+        <p>Extra points for holding across multiple curated projects — a diversified collector scores higher.</p>
+      </div>
+      <div class="crit">
+        <div class="cn">04</div>
+        <h3>Mint Activity</h3>
+        <p>2 pts per verified mint from the curated list. Being early earns more — mints from featured projects are boosted.</p>
+      </div>
+      <div class="crit">
+        <div class="cn">05</div>
+        <h3>Trading Volume</h3>
+        <p>1 pt per 0.1 ETH of NFT transfer value received — active collectors rack this up across seasons.</p>
+      </div>
+      <div class="crit">
+        <div class="cn">06</div>
+        <h3>Featured Boost</h3>
+        <p>Activity in featured projects (currently Azuki) earns a 1.5× multiplier across holdings, mints, and more.</p>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- LEADERBOARD -->
+  <div class="lb-section"><div class="wrap">
+    <h2>Top wallets</h2>
+    <div id="lbWrap">
+      <p class="lb-loading">Loading leaderboard…</p>
+    </div>
+  </div></div>
+
+</div><!-- /page -->
+
+<footer><div class="wrap">
+  <img src="assets/wordmark.png" alt="FOXXY">
+  <div class="flinks">
+    <a href="index.html">Home</a>
+    <a href="world.html">World</a>
+    <a href="waitlist.html">Whitelist</a>
+  </div>
+  <p class="copy">© 2024 FOXXY. All rights reserved.</p>
+</div></footer>
+
+<script>
+// ── Score checker ──────────────────────────────────────────────────────────────
+var checkBtn  = document.getElementById('checkBtn');
+var walletInp = document.getElementById('walletInput');
+var errMsg    = document.getElementById('errMsg');
+var results   = document.getElementById('results');
+
+walletInp.addEventListener('keydown', function(e){ if(e.key === 'Enter') checkScore(); });
+
+function setErr(msg) {
+  errMsg.textContent = msg;
+  errMsg.classList.add('show');
+}
+function clearErr() {
+  errMsg.classList.remove('show');
+}
+
+function checkScore() {
+  var wallet = walletInp.value.trim();
+  clearErr();
+  results.classList.remove('show');
+
+  if (!wallet) { setErr('Paste a wallet address first.'); return; }
+  if (!/^0x[a-fA-F0-9]{40}$/i.test(wallet)) { setErr("That doesn't look like a valid ETH address."); return; }
+
+  checkBtn.disabled = true;
+  checkBtn.innerHTML = '<span class="spin"></span>Scanning…';
+
+  fetch('/api/score?wallet=' + encodeURIComponent(wallet))
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+      checkBtn.disabled = false;
+      checkBtn.textContent = 'Check Score';
+
+      if (data.error) { setErr(data.error); return; }
+
+      // Populate results
+      document.getElementById('scoreNum').textContent = data.total || 0;
+      document.getElementById('rankSpan').textContent = '#' + (data.rank || '—');
+      document.getElementById('totalSpan').textContent = data.totalWallets || '—';
+
+      var b = data.breakdown || {};
+      document.getElementById('bHoldings').textContent = b.holdings || 0;
+      document.getElementById('bDuration').textContent = b.duration || 0;
+      document.getElementById('bDiversity').textContent = b.diversity || 0;
+      document.getElementById('bMints').textContent = b.mints || 0;
+      document.getElementById('bVolume').textContent = b.volume || 0;
+      document.getElementById('bVolumeEth').textContent =
+        (b.eth_volume != null ? b.eth_volume.toFixed(2) + ' ETH activity' : 'ETH activity pts');
+
+      var pills = document.getElementById('projectPills');
+      pills.innerHTML = '';
+      var projects = b.projects || [];
+      if (projects.length) {
+        projects.forEach(function(p) {
+          var span = document.createElement('span');
+          span.className = 'pill';
+          span.textContent = p;
+          pills.appendChild(span);
+        });
+      } else {
+        var none = document.createElement('span');
+        none.className = 'pill-none';
+        none.textContent = 'No curated projects found in this wallet.';
+        pills.appendChild(none);
+      }
+
+      results.classList.add('show');
+      results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    })
+    .catch(function() {
+      checkBtn.disabled = false;
+      checkBtn.textContent = 'Check Score';
+      setErr('Scoring failed — please try again.');
+    });
+}
+
+// ── Leaderboard ────────────────────────────────────────────────────────────────
+function shortWallet(w) {
+  return w ? w.slice(0,6) + '…' + w.slice(-4) : '—';
+}
+
+function loadLeaderboard() {
+  fetch('/api/leaderboard')
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+      var wrap = document.getElementById('lbWrap');
+      var lb   = data.leaderboard || [];
+
+      if (!lb.length) {
+        wrap.innerHTML = '<p class="lb-empty">No wallets scored yet — be the first.</p>';
+        return;
+      }
+
+      var rankColors = ['gold','silver','bronze'];
+      var html = '<div class="lb-head"><span>RANK</span><span>WALLET</span><span>SCORE</span></div>';
+      lb.forEach(function(row) {
+        var top3Class = row.rank <= 3 ? ' top3' : '';
+        var rankClass = rankColors[row.rank - 1] ? ' ' + rankColors[row.rank - 1] : '';
+        var projectStr = row.projects && row.projects.length
+          ? row.projects.slice(0,3).join(', ') + (row.projects.length > 3 ? ' +' + (row.projects.length - 3) : '')
+          : '';
+        html += '<div class="lb-row' + top3Class + '">' +
+          '<span class="lb-rank' + rankClass + '">' + row.rank + '</span>' +
+          '<span class="lb-wallet">' + shortWallet(row.wallet) +
+            (projectStr ? '<br><span class="lb-projects">' + projectStr + '</span>' : '') +
+          '</span>' +
+          '<span class="lb-score">' + row.score + '</span>' +
+        '</div>';
+      });
+      if (data.totalScored > 100) {
+        html += '<p class="lb-empty" style="font-size:12px">Showing top 100 of ' + data.totalScored + ' wallets scored.</p>';
+      }
+      wrap.innerHTML = html;
+    })
+    .catch(function() {
+      document.getElementById('lbWrap').innerHTML =
+        '<p class="lb-empty">Leaderboard unavailable right now.</p>';
+    });
+}
+
+loadLeaderboard();
+</script>
+
+</body>
+</html>

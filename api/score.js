@@ -43,9 +43,15 @@ function alchemyUrl() {
   return `https://eth-mainnet.g.alchemy.com/v2/${key}`;
 }
 
-// Fetch all NFTs owned by wallet (paginated)
+function alchemyNftUrl() {
+  const key = process.env.ALCHEMY_API_KEY;
+  if (!key) throw new Error('ALCHEMY_API_KEY not set');
+  return `https://eth-mainnet.g.alchemy.com/nft/v3/${key}`;
+}
+
+// Fetch all NFTs owned by wallet (paginated) — uses NFT API v3 to bypass spam filter
 async function fetchNFTs(wallet) {
-  const base = alchemyUrl();
+  const base = alchemyNftUrl();
   const nfts = [];
   let pageKey = '';
   do {
@@ -53,6 +59,7 @@ async function fetchNFTs(wallet) {
     url.searchParams.set('owner', wallet);
     url.searchParams.set('withMetadata', 'false');
     url.searchParams.set('pageSize', '100');
+    url.searchParams.set('spamConfidenceLevel', 'NONE');  // include all NFTs, skip spam filter
     if (pageKey) url.searchParams.set('pageKey', pageKey);
 
     const r = await fetch(url.toString());

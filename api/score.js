@@ -115,7 +115,8 @@ module.exports = async (req, res) => {
     let holdingsScore = 0;
 
     for (const nft of nfts) {
-      const contract = (nft.contract?.address || '').toLowerCase();
+      // v3 API uses contractAddress (flat), v2 uses contract.address (nested)
+      const contract = (nft.contract?.address || nft.contractAddress || '').toLowerCase();
       const proj = CURATED[contract];
       if (!proj || heldContracts.has(contract)) continue;
       heldContracts.add(contract);
@@ -128,7 +129,7 @@ module.exports = async (req, res) => {
     // Points for holding any NFTs (not just curated) — makes all collectors score.
     const allContracts = new Set();
     for (const nft of nfts) {
-      const c = (nft.contract?.address || '').toLowerCase();
+      const c = (nft.contract?.address || nft.contractAddress || '').toLowerCase();
       if (c) allContracts.add(c);
     }
     const genNftScore = Math.min(nfts.length * GEN_NFT_PTS, GEN_NFT_CAP);

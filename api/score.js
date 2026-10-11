@@ -29,6 +29,14 @@ const DURATION_BONUS    = 10;    // bonus per curated project held ≥ 30 days
 const MIN_HOLD_DAYS     = 30;
 const ZERO_ADDR         = '0x0000000000000000000000000000000000000000';
 
+// General NFT activity — any collection, not just curated
+const GEN_NFT_PTS       = 1;    // pts per NFT held (any collection)
+const GEN_NFT_CAP       = 40;   // max pts from general NFT count
+const GEN_DIV_PTS       = 3;    // pts per unique collection held (any contract)
+const GEN_DIV_CAP       = 15;   // max unique collections counted for general diversity
+const GEN_MINT_PTS      = 1;    // pts per mint from any contract (zero address)
+const GEN_MINT_CAP      = 20;   // max pts from general mints
+
 function alchemyUrl() {
   const key = process.env.ALCHEMY_API_KEY;
   if (!key) throw new Error('ALCHEMY_API_KEY not set');
@@ -109,6 +117,23 @@ module.exports = async (req, res) => {
         : proj.pts;
     }
 
+    // ── 1b. General NFT activity ────────────────────────────────────────────
+    // Points for holding any NFTs (not just curated) — makes all collectors score.
+    const allContracts = new Set();
+    for (const nft of nfts) {
+      const c = (nft.contract?.address || '').toLowerCase();
+      if (c) allContracts.add(c);
+    }
+    const genNftScore = Math.min(nfts.length * GEN_NFT_PTS, GEN_NFT_CAP);
+    const genDivScore = Math.min(Math.max(0, allContracts.size - 1) * GEN_DIV_PTS, GEN_DIV_CAP * GEN_DIV_PTS);
+
+    // General mints: transfers from zero address, any contract
+    let genMintCount = 0;
+    for (const tx of transfers) {
+      if ((tx.from || '').toLowerCase() === ZERO_ADDR) genMintCount++;
+    }
+    const genMintScore = Math.min(genMintCount * GEN_MINT_PTS, GEN_MINT_CAP);
+
     // ── 2. Holding duration bonus ────────────────────────────────────────────
     // Each curated project held continuously for ≥ MIN_HOLD_DAYS earns a bonus.
     const firstAcquired = {};   // contract → earliest inbound timestamp (ms)
@@ -165,16 +190,22 @@ module.exports = async (req, res) => {
     const volumeScore = Math.round(totalEth * VOL_PTS_PER_ETH);
 
     // ── Total ────────────────────────────────────────────────────────────────
-    const total = holdingsScore + durationScore + diversityScore + mintScore + volumeScore;
+    const total = holdingsScore + durationScore + diversityScore + mintScore + volumeScore
+                + genNftScore + genDivScore + genMintScore;
 
     const breakdown = {
-      holdings:  holdingsScore,
-      duration:  durationScore,
-      diversity: diversityScore,
-      mints:     mintScore,
-      volume:    volumeScore,
-      projects:  [...heldContracts].map(c => CURATED[c]?.name).filter(Boolean),
-      eth_volume: Math.round(totalEth * 100) / 100,
+      holdings:      holdingsScore,
+      duration:      durationScore,
+      diversity:     diversityScore,
+      mints:         mintScore,
+      volume:        volumeScore,
+      gen_nfts:      genNftScore,
+      gen_diversity: genDivScore,
+      gen_mints:     genMintScore,
+      projects:      [...heldContracts].map(c => CURATED[c]?.name).filter(Boolean),
+      nft_count:     nfts.length,
+      collection_count: allContracts.size,
+      eth_volume:    Math.round(totalEth * 100) / 100,
     };
 
     // ── Upsert to DB ─────────────────────────────────────────────────────────

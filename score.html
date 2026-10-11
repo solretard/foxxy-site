@@ -143,7 +143,7 @@ footer img{height:22px;opacity:.85;}
   <div class="hero"><div class="wrap">
     <div class="badge-label"><span class="dot"></span>ON-CHAIN SCORE</div>
     <h1>See where your wallet stands.</h1>
-    <p class="lede">Paste your ETH wallet below. We scan your NFT holdings and history to calculate your FOXXY score — higher scores get priority whitelist access.</p>
+    <p class="lede">Paste your ETH wallet below. We scan your full NFT history on-chain — any collection counts toward your base score, with blue-chip holdings earning premium points on top.</p>
   </div></div>
 
   <!-- SCORE CHECKER -->
@@ -166,24 +166,29 @@ footer img{height:22px;opacity:.85;}
 
         <div class="breakdown-grid">
           <div class="bcard">
-            <div class="bname">HOLDINGS</div>
-            <div class="bval" id="bHoldings">0</div>
-            <div class="bsub">curated project pts</div>
+            <div class="bname">NFT HOLDINGS</div>
+            <div class="bval" id="bGenNfts">0</div>
+            <div class="bsub" id="bNftCount">any collection</div>
           </div>
           <div class="bcard">
-            <div class="bname">DURATION</div>
-            <div class="bval" id="bDuration">0</div>
-            <div class="bsub">long-hold bonus</div>
-          </div>
-          <div class="bcard">
-            <div class="bname">DIVERSITY</div>
-            <div class="bval" id="bDiversity">0</div>
-            <div class="bsub">multi-collection pts</div>
+            <div class="bname">COLLECTIONS</div>
+            <div class="bval" id="bGenDiv">0</div>
+            <div class="bsub" id="bCollCount">unique projects held</div>
           </div>
           <div class="bcard">
             <div class="bname">MINTS</div>
-            <div class="bval" id="bMints">0</div>
-            <div class="bsub">verified mint activity</div>
+            <div class="bval" id="bGenMints">0</div>
+            <div class="bsub">on-chain mint activity</div>
+          </div>
+          <div class="bcard">
+            <div class="bname">BLUE-CHIP</div>
+            <div class="bval" id="bHoldings">0</div>
+            <div class="bsub">curated holdings pts</div>
+          </div>
+          <div class="bcard">
+            <div class="bname">LONG HOLD</div>
+            <div class="bval" id="bDuration">0</div>
+            <div class="bsub">30-day hold bonus</div>
           </div>
           <div class="bcard">
             <div class="bname">VOLUME</div>
@@ -208,28 +213,28 @@ footer img{height:22px;opacity:.85;}
     <div class="criteria-grid">
       <div class="crit">
         <div class="cn">01</div>
-        <h3>Curated Holdings</h3>
-        <p>Points for holding NFTs from FOXXY's curated list of blue-chip collections. Azuki gets a 1.5× featured boost.</p>
+        <h3>NFT Holdings</h3>
+        <p>1 pt per NFT held from any collection, up to 40 pts. Any active NFT wallet earns points here.</p>
       </div>
       <div class="crit">
         <div class="cn">02</div>
-        <h3>Holding Duration</h3>
-        <p>Bonus awarded for each curated project held for 30+ days — rewarding diamond hands over flippers.</p>
+        <h3>Collection Breadth</h3>
+        <p>3 pts per unique collection held (up to 15 collections) — collectors who range widely score higher.</p>
       </div>
       <div class="crit">
         <div class="cn">03</div>
-        <h3>Collection Diversity</h3>
-        <p>Extra points for holding across multiple curated projects — a diversified collector scores higher.</p>
+        <h3>Mint Activity</h3>
+        <p>Points for every verified on-chain mint — being early and minting directly always earns more.</p>
       </div>
       <div class="crit">
         <div class="cn">04</div>
-        <h3>Mint Activity</h3>
-        <p>2 pts per verified mint from the curated list. Being early earns more — mints from featured projects are boosted.</p>
+        <h3>Blue-Chip Holdings</h3>
+        <p>Bonus pts for holding FOXXY's curated blue-chips: BAYC, CryptoPunks, Azuki, Pudgy Penguins and more.</p>
       </div>
       <div class="crit">
         <div class="cn">05</div>
-        <h3>Trading Volume</h3>
-        <p>1 pt per 0.1 ETH of NFT transfer value received — active collectors rack this up across seasons.</p>
+        <h3>Long Hold Bonus</h3>
+        <p>+10 pts per curated project held for 30+ days — diamond hands over flippers, always.</p>
       </div>
       <div class="crit">
         <div class="cn">06</div>
@@ -301,10 +306,15 @@ function checkScore() {
       document.getElementById('totalSpan').textContent = data.totalWallets || '—';
 
       var b = data.breakdown || {};
+      document.getElementById('bGenNfts').textContent = b.gen_nfts || 0;
+      document.getElementById('bNftCount').textContent =
+        (b.nft_count != null ? b.nft_count + ' NFT' + (b.nft_count !== 1 ? 's' : '') + ' held' : 'any collection');
+      document.getElementById('bGenDiv').textContent = b.gen_diversity || 0;
+      document.getElementById('bCollCount').textContent =
+        (b.collection_count != null ? b.collection_count + ' collection' + (b.collection_count !== 1 ? 's' : '') : 'unique projects held');
+      document.getElementById('bGenMints').textContent = b.gen_mints || 0;
       document.getElementById('bHoldings').textContent = b.holdings || 0;
       document.getElementById('bDuration').textContent = b.duration || 0;
-      document.getElementById('bDiversity').textContent = b.diversity || 0;
-      document.getElementById('bMints').textContent = b.mints || 0;
       document.getElementById('bVolume').textContent = b.volume || 0;
       document.getElementById('bVolumeEth').textContent =
         (b.eth_volume != null ? b.eth_volume.toFixed(2) + ' ETH activity' : 'ETH activity pts');

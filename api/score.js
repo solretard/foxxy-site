@@ -59,7 +59,7 @@ async function fetchNFTs(wallet) {
     url.searchParams.set('owner', wallet);
     url.searchParams.set('withMetadata', 'false');
     url.searchParams.set('pageSize', '100');
-    url.searchParams.set('spamConfidenceLevel', 'NONE');  // include all NFTs, skip spam filter
+    // v3 endpoint has no spam filter by default — no excludeFilters param needed
     if (pageKey) url.searchParams.set('pageKey', pageKey);
 
     const r = await fetch(url.toString());

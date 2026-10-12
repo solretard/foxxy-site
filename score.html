@@ -193,7 +193,7 @@ footer img{height:22px;opacity:.85;}
           <div class="bcard">
             <div class="bname">VOLUME</div>
             <div class="bval" id="bVolume">0</div>
-            <div class="bsub" id="bVolumeEth">ETH activity pts</div>
+            <div class="bsub" id="bVolumeEth">NFT transfers</div>
           </div>
         </div>
 
@@ -317,7 +317,7 @@ function checkScore() {
       document.getElementById('bDuration').textContent = b.duration || 0;
       document.getElementById('bVolume').textContent = b.volume || 0;
       document.getElementById('bVolumeEth').textContent =
-        (b.eth_volume != null ? b.eth_volume.toFixed(2) + ' ETH activity' : 'ETH activity pts');
+        (b.tx_count != null ? b.tx_count + ' NFT transfers' : 'NFT transfers');
 
       var pills = document.getElementById('projectPills');
       pills.innerHTML = '';

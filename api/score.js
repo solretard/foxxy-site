@@ -24,7 +24,8 @@ const DIVERSITY_PTS     = 5;     // bonus per curated project beyond the first
 const DIVERSITY_CAP     = 8;     // max extra projects counted for diversity
 const MINT_PTS          = 2;     // pts per verified mint (from zero address)
 const MINT_CAP_PROJECT  = 5;     // max mints counted per project
-const VOL_PTS_PER_ETH   = 10;   // 10 pts per ETH of transfer value (= 1 pt per 0.1 ETH)
+const VOL_PTS_PER_TX    = 1;    // 1 pt per inbound ERC-721 transfer (proxy for activity)
+const VOL_TX_CAP        = 30;   // max pts from transfer volume
 const DURATION_BONUS    = 10;    // bonus per curated project held ≥ 30 days
 const MIN_HOLD_DAYS     = 30;
 const ZERO_ADDR         = '0x0000000000000000000000000000000000000000';
@@ -85,7 +86,7 @@ async function fetchInboundTransfers(wallet) {
         category: ['erc721'],
         withMetadata: true,
         maxCount: '0x3e8',   // 1000 transfers
-        order: 'desc',
+        order: 'asc',        // oldest first → correct first-acquisition dates for long hold
       }],
     }),
   });
@@ -189,13 +190,10 @@ module.exports = async (req, res) => {
     }
 
     // ── 5. Trading volume ────────────────────────────────────────────────────
-    // Sum ETH value of all inbound ERC-721 transfers as a proxy for engagement.
-    let totalEth = 0;
-    for (const tx of transfers) {
-      const val = parseFloat(tx.value || 0);
-      if (!isNaN(val)) totalEth += val;
-    }
-    const volumeScore = Math.round(totalEth * VOL_PTS_PER_ETH);
+    // tx.value is always 0 for NFT marketplace purchases (ETH goes through marketplace contract).
+    // Use transfer count as an activity proxy instead.
+    const totalEth = 0;   // kept for breakdown field compatibility
+    const volumeScore = Math.min(transfers.length * VOL_PTS_PER_TX, VOL_TX_CAP);
 
     // ── Total ────────────────────────────────────────────────────────────────
     const total = holdingsScore + durationScore + diversityScore + mintScore + volumeScore
@@ -213,7 +211,8 @@ module.exports = async (req, res) => {
       projects:      [...heldContracts].map(c => CURATED[c]?.name).filter(Boolean),
       nft_count:     nfts.length,
       collection_count: allContracts.size,
-      eth_volume:    Math.round(totalEth * 100) / 100,
+      eth_volume:    totalEth,
+      tx_count:      transfers.length,
     };
 
     // ── Upsert to DB ─────────────────────────────────────────────────────────

@@ -71,6 +71,9 @@ section.panel{padding:56px 0;border-bottom:1px solid var(--line);}
 .score-card .score-lbl{font-size:13px;letter-spacing:.14em;color:var(--steel);margin-top:8px;display:block;}
 .score-card .rank-line{margin-top:16px;font-size:14px;color:var(--steel);}
 .score-card .rank-line span{color:var(--cord);font-weight:600;}
+.score-card .congrats-msg{margin:14px 0 0;font-family:var(--display);font-size:16px;color:var(--fur);min-height:22px;}
+.score-card .lb-cta{display:inline-block;margin-top:14px;font-size:13px;color:var(--cord);text-decoration:none;letter-spacing:.04em;border-bottom:1px solid rgba(154,63,53,.4);padding-bottom:2px;transition:border-color .15s,color .15s;}
+.score-card .lb-cta:hover{color:#C05040;border-color:var(--cord);}
 
 .breakdown-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;}
 @media(max-width:500px){.breakdown-grid{grid-template-columns:1fr;}}
@@ -162,6 +165,10 @@ footer img{height:22px;opacity:.85;}
           <span class="score-num" id="scoreNum">0</span>
           <span class="score-lbl">FOXXY SCORE</span>
           <p class="rank-line">Ranked <span id="rankSpan">#—</span> of <span id="totalSpan">—</span> wallets scored</p>
+          <p class="congrats-msg" id="congratsMsg"></p>
+          <a class="lb-cta" id="lbCta" href="leaderboard.html" style="display:none;">
+            See how you rank against everyone →
+          </a>
         </div>
 
         <div class="breakdown-grid">
@@ -302,8 +309,26 @@ function checkScore() {
 
       // Populate results
       document.getElementById('scoreNum').textContent = data.total || 0;
-      document.getElementById('rankSpan').textContent = '#' + (data.rank || '—');
-      document.getElementById('totalSpan').textContent = data.totalWallets || '—';
+      var rank = data.rank || 0;
+      var totalWallets = data.totalWallets || 0;
+      document.getElementById('rankSpan').textContent = '#' + (rank || '—');
+      document.getElementById('totalSpan').textContent = totalWallets || '—';
+
+      // Congrats message
+      var pct = totalWallets > 1 ? Math.round((1 - (rank - 1) / totalWallets) * 100) : 100;
+      var msg = '';
+      if (rank === 1)       msg = 'You\'re sitting at the top. The board is yours.';
+      else if (rank <= 3)   msg = 'Top 3. Your wallet speaks for itself.';
+      else if (rank <= 10)  msg = 'Top 10. Serious onchain rep.';
+      else if (pct >= 90)   msg = 'Top ' + (100 - pct + 1) + '% — your history puts you ahead of most.';
+      else if (pct >= 75)   msg = 'Solid standing. Top ' + (100 - pct + 1) + '% of scored wallets.';
+      else if (data.total > 0) msg = 'You\'re on the board. Keep building your history.';
+      else                  msg = 'No score yet — your wallet hasn\'t been picked up by the scan.';
+      document.getElementById('congratsMsg').textContent = msg;
+
+      // Show leaderboard CTA
+      var cta = document.getElementById('lbCta');
+      cta.style.display = data.total > 0 ? 'inline-block' : 'none';
 
       var b = data.breakdown || {};
       document.getElementById('bGenNfts').textContent = b.gen_nfts || 0;

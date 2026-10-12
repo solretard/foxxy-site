@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/png" href="assets/fox.png">
+<title>FOXXY — Leaderboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1C2528;--ink-2:#222D31;--paper:#EDEEE8;--fur:#E4E0D2;
+  --steel:#8D9AA0;--steel-dim:#5D6C72;--cord:#9A3F35;--line:#33434A;
+  --gold:#C9963A;--silver:#8D9AA0;--bronze:#8B5E3C;
+  --display:"Shippori Mincho B1",Georgia,serif;
+  --body:"Zen Kaku Gothic New","Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;background:var(--ink);color:var(--fur);font-family:var(--body);font-size:17px;line-height:1.75;-webkit-font-smoothing:antialiased;}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(rgba(237,238,232,.09) 1px,transparent 1px);background-size:4px 4px;opacity:.5;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 28px;}
+a{color:inherit;text-decoration:none;}
+:focus-visible{outline:2px solid var(--paper);outline-offset:3px;}
+
+/* nav */
+nav{border-bottom:1px solid var(--line);}
+nav .wrap{max-width:1120px;display:flex;align-items:center;justify-content:space-between;height:68px;}
+nav img{height:26px;}
+.navlinks{display:flex;gap:26px;font-size:14px;letter-spacing:.06em;color:var(--steel);}
+.navlinks a:hover{color:var(--paper);}
+@media(max-width:560px){.navlinks{display:none;}}
+
+/* hero */
+.hero{padding:56px 0 44px;text-align:center;border-bottom:1px solid var(--line);}
+.badge-label{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.14em;color:var(--cord);border:1px solid var(--cord);padding:6px 16px;margin-bottom:24px;}
+.badge-label .dot{width:6px;height:6px;border-radius:50%;background:var(--cord);animation:pulse 1.4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(1.4);}}
+h1{font-family:var(--display);font-weight:800;font-size:36px;line-height:1.2;color:var(--paper);margin:0 0 10px;}
+.lede{font-size:15px;color:var(--steel);max-width:48ch;margin:0 auto;}
+@media(max-width:560px){h1{font-size:26px;}}
+
+/* controls */
+.controls{padding:28px 0 0;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.total-count{font-size:13px;color:var(--steel-dim);}
+.total-count strong{color:var(--fur);}
+.refresh-row{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--steel-dim);}
+.refresh-btn{background:none;border:1px solid var(--line);color:var(--steel);font-family:var(--body);font-size:12px;letter-spacing:.08em;padding:5px 14px;cursor:pointer;transition:border-color .15s,color .15s;}
+.refresh-btn:hover{border-color:var(--steel);color:var(--paper);}
+#lastUpdated{font-size:12px;color:var(--steel-dim);}
+
+/* lookup strip */
+.lookup{padding:20px 0 0;}
+.lookup-row{display:flex;gap:0;max-width:520px;}
+.lookup-row input{flex:1;background:var(--ink-2);border:1px solid var(--line);border-right:none;color:var(--paper);font-family:var(--body);font-size:14px;padding:10px 14px;outline:none;}
+.lookup-row input::placeholder{color:var(--steel-dim);}
+.lookup-row input:focus{border-color:var(--steel);}
+.lookup-row button{background:var(--cord);border:1px solid var(--cord);color:#fff;font-family:var(--body);font-size:14px;font-weight:500;padding:10px 22px;cursor:pointer;transition:background .15s;}
+.lookup-row button:hover{background:#B04B40;}
+#lookupResult{margin-top:10px;font-size:13px;color:var(--steel);min-height:18px;}
+
+/* table */
+.table-wrap{padding:24px 0 72px;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead th{font-size:11px;letter-spacing:.12em;color:var(--steel-dim);text-align:left;padding:0 12px 10px;border-bottom:1px solid var(--line);}
+thead th.num{text-align:right;}
+tbody tr{border-bottom:1px solid rgba(51,67,74,.5);transition:background .15s;}
+tbody tr:hover{background:rgba(255,255,255,.03);}
+tbody tr.highlight{background:rgba(154,63,53,.08);border-bottom-color:rgba(154,63,53,.3);}
+tbody td{padding:14px 12px;font-size:15px;vertical-align:middle;}
+tbody td.num{text-align:right;font-variant-numeric:tabular-nums;}
+
+/* rank cell */
+.rank-num{font-family:var(--display);font-weight:600;font-size:17px;color:var(--steel-dim);min-width:36px;display:inline-block;text-align:right;}
+.rank-num.r1{color:var(--gold);}
+.rank-num.r2{color:var(--silver);}
+.rank-num.r3{color:var(--bronze);}
+
+/* wallet cell */
+.wallet-addr{font-size:13px;color:var(--fur);font-family:monospace;letter-spacing:.02em;}
+.wallet-addr.is-me{color:var(--cord);}
+.wallet-projects{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;}
+.proj-tag{font-size:10px;letter-spacing:.07em;color:var(--steel-dim);border:1px solid var(--line);padding:1px 7px;}
+
+/* score cell */
+.score-val{font-family:var(--display);font-size:20px;font-weight:600;color:var(--paper);}
+
+/* nft count */
+.nft-count{font-size:13px;color:var(--steel-dim);}
+
+/* empty / loading */
+.state-row td{text-align:center;padding:56px 12px;color:var(--steel-dim);font-size:14px;}
+
+/* pagination */
+.pagination{display:flex;align-items:center;gap:10px;justify-content:center;padding-bottom:56px;}
+.pg-btn{background:none;border:1px solid var(--line);color:var(--steel);font-family:var(--body);font-size:13px;padding:8px 20px;cursor:pointer;transition:border-color .15s,color .15s;}
+.pg-btn:hover:not(:disabled){border-color:var(--steel);color:var(--paper);}
+.pg-btn:disabled{opacity:.3;cursor:default;}
+.pg-info{font-size:13px;color:var(--steel-dim);}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a href="index.html"><img src="assets/wordmark.png" alt="FOXXY"></a>
+  <div class="navlinks">
+    <a href="index.html">Home</a>
+    <a href="world.html#utility">Utility</a>
+    <a href="score.html">Score</a>
+    <a href="leaderboard.html">Leaderboard</a>
+    <a href="waitlist.html">Waitlist</a>
+  </div>
+</div></nav>
+
+<div class="hero"><div class="wrap">
+  <div class="badge-label"><span class="dot"></span>LIVE</div>
+  <h1>Onchain Reputation Board</h1>
+  <p class="lede">Ranked by wallet score — holdings, history, conviction. Updates every 30 seconds.</p>
+</div></div>
+
+<div class="wrap">
+  <div class="controls">
+    <div class="total-count" id="totalCount">— wallets scored</div>
+    <div class="refresh-row">
+      <span id="lastUpdated"></span>
+      <button class="refresh-btn" id="refreshBtn">↻ Refresh</button>
+    </div>
+  </div>
+
+  <div class="lookup">
+    <div class="lookup-row">
+      <input type="text" id="lookupInput" placeholder="Find a wallet — 0x..." maxlength="42" spellcheck="false" autocomplete="off">
+      <button id="lookupBtn">Find</button>
+    </div>
+    <div id="lookupResult"></div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:56px;">RANK</th>
+          <th>WALLET</th>
+          <th class="num" style="width:90px;">NFTs</th>
+          <th class="num" style="width:110px;">SCORE</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr class="state-row"><td colspan="4">Loading leaderboard…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination">
+    <button class="pg-btn" id="prevBtn" disabled>← Prev</button>
+    <span class="pg-info" id="pgInfo">Page 1</span>
+    <button class="pg-btn" id="nextBtn" disabled>Next →</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var LIMIT   = 50;
+  var page    = 0;
+  var total   = 0;
+  var myWallet = '';
+  var pollTimer = null;
+  var WALLET_RE = /^0x[a-fA-F0-9]{40}$/i;
+
+  // ── helpers ───────────────────────────────────────────────────────────────
+  function shorten(addr){
+    return addr.slice(0,6) + '…' + addr.slice(-4);
+  }
+
+  function timeAgo(iso){
+    if(!iso) return '';
+    var diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+    if(diff < 60)  return diff + 's ago';
+    if(diff < 3600) return Math.floor(diff/60) + 'm ago';
+    return Math.floor(diff/3600) + 'h ago';
+  }
+
+  function rankClass(r){ return r===1?'r1':r===2?'r2':r===3?'r3':''; }
+
+  // ── fetch & render ────────────────────────────────────────────────────────
+  function load(p){
+    page = p;
+    var tbody = document.getElementById('tbody');
+    tbody.innerHTML = '<tr class="state-row"><td colspan="4">Loading…</td></tr>';
+
+    fetch('/api/leaderboard?limit='+LIMIT+'&page='+page)
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if(data.error){ throw new Error(data.error); }
+        total = data.total || 0;
+        render(data.entries || []);
+        updateControls();
+        document.getElementById('lastUpdated').textContent = 'Updated just now';
+      })
+      .catch(function(err){
+        tbody.innerHTML = '<tr class="state-row"><td colspan="4">Failed to load. <a href="#" onclick="load(0);return false;" style="color:var(--cord)">Try again</a></td></tr>';
+      });
+  }
+
+  function render(entries){
+    var tbody = document.getElementById('tbody');
+    if(!entries.length){
+      tbody.innerHTML = '<tr class="state-row"><td colspan="4">No wallets scored yet. Be the first — <a href="score.html" style="color:var(--cord)">check your score</a>.</td></tr>';
+      return;
+    }
+    var html = '';
+    entries.forEach(function(e){
+      var isMe = myWallet && e.wallet.toLowerCase() === myWallet.toLowerCase();
+      var projHtml = e.projects.slice(0,3).map(function(p){
+        return '<span class="proj-tag">'+p+'</span>';
+      }).join('');
+      html += '<tr'+(isMe?' class="highlight"':'')+' data-wallet="'+e.wallet+'">'
+        + '<td><span class="rank-num '+rankClass(e.rank)+'">'+e.rank+'</span></td>'
+        + '<td>'
+          + '<div class="wallet-addr'+(isMe?' is-me':'')+'">'+shorten(e.wallet)+(isMe?' ← you':'')+' <span style="font-size:11px;color:var(--steel-dim)">'+timeAgo(e.scored_at)+'</span></div>'
+          + (projHtml ? '<div class="wallet-projects">'+projHtml+'</div>' : '')
+        + '</td>'
+        + '<td class="num"><span class="nft-count">'+e.nft_count+'</span></td>'
+        + '<td class="num"><span class="score-val">'+e.score+'</span></td>'
+        + '</tr>';
+    });
+    tbody.innerHTML = html;
+  }
+
+  function updateControls(){
+    var pages = Math.max(1, Math.ceil(total / LIMIT));
+    document.getElementById('totalCount').innerHTML = '<strong>'+total+'</strong> wallets scored';
+    document.getElementById('pgInfo').textContent = 'Page '+(page+1)+' of '+pages;
+    document.getElementById('prevBtn').disabled = page === 0;
+    document.getElementById('nextBtn').disabled = page >= pages - 1;
+  }
+
+  // ── polling ───────────────────────────────────────────────────────────────
+  function startPoll(){
+    stopPoll();
+    pollTimer = setInterval(function(){
+      load(page);
+    }, 30000);
+  }
+  function stopPoll(){
+    if(pollTimer){ clearInterval(pollTimer); pollTimer = null; }
+  }
+
+  // ── lookup ────────────────────────────────────────────────────────────────
+  function lookupWallet(){
+    var raw = document.getElementById('lookupInput').value.trim();
+    var result = document.getElementById('lookupResult');
+    if(!WALLET_RE.test(raw)){
+      result.textContent = 'Enter a valid 0x wallet address.';
+      return;
+    }
+    myWallet = raw.toLowerCase();
+    result.textContent = 'Searching…';
+
+    fetch('/api/score?wallet='+myWallet)
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if(data.error){ result.textContent = data.error; return; }
+        result.innerHTML = 'Your wallet: rank <strong style="color:var(--cord)">#'+data.rank+'</strong> of '+data.totalWallets+' — score <strong style="color:var(--paper)">'+data.total+'</strong>';
+        // jump to the right page and highlight
+        var targetPage = Math.floor((data.rank - 1) / LIMIT);
+        load(targetPage);
+      })
+      .catch(function(){
+        result.textContent = 'Lookup failed. Try again.';
+      });
+  }
+
+  // ── events ────────────────────────────────────────────────────────────────
+  document.getElementById('refreshBtn').addEventListener('click', function(){
+    load(page);
+    startPoll();
+  });
+  document.getElementById('prevBtn').addEventListener('click', function(){ load(page-1); });
+  document.getElementById('nextBtn').addEventListener('click', function(){ load(page+1); });
+  document.getElementById('lookupBtn').addEventListener('click', lookupWallet);
+  document.getElementById('lookupInput').addEventListener('keydown', function(e){
+    if(e.key==='Enter') lookupWallet();
+  });
+
+  // ── init ──────────────────────────────────────────────────────────────────
+  load(0);
+  startPoll();
+})();
+</script>
+</body>
+</html>

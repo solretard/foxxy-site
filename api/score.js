@@ -8,15 +8,23 @@ const WALLET_RE = /^0x[a-fA-F0-9]{40}$/i;
 // ── Curated projects ──────────────────────────────────────────────────────────
 // address (lowercase) → { name, pts, featured }
 const CURATED = {
-  '0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d': { name: 'BAYC',           pts: 50, featured: false },
-  '0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb': { name: 'CryptoPunks',    pts: 50, featured: false },
-  '0xed5af388653567af2f388e6224dc7c4b3241c544': { name: 'Azuki',          pts: 40, featured: true  },
-  '0x49cf6f5d44e70224e2e23fdcdd2c053f30ada28b': { name: 'CloneX',         pts: 35, featured: false },
-  '0xbd3531da5cf5857e7cfaa92426877b022e612cf8': { name: 'Pudgy Penguins', pts: 40, featured: false },
-  '0x8a90cab2b38dba80c64b7734e58ee1db38b8992e': { name: 'Doodles',        pts: 25, featured: false },
-  '0x5af0d9827e0c53e4799bb226655a1de152a425a5': { name: 'Milady',         pts: 25, featured: false },
-  '0x60e4d786628fea6478f785a6d7e704777c86a7c6': { name: 'MAYC',           pts: 30, featured: false },
-  '0x8821bee2ba0ddf28761afff119d66390d594cd28': { name: 'DeGods',         pts: 30, featured: false },
+  '0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d': { name: 'BAYC',              pts: 50, featured: false },
+  '0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb': { name: 'CryptoPunks',       pts: 50, featured: false },
+  '0xed5af388653567af2f388e6224dc7c4b3241c544': { name: 'Azuki',             pts: 40, featured: true  },
+  '0x49cf6f5d44e70224e2e23fdcdd2c053f30ada28b': { name: 'CloneX',            pts: 35, featured: false },
+  '0xbd3531da5cf5857e7cfaa92426877b022e612cf8': { name: 'Pudgy Penguins',    pts: 40, featured: false },
+  '0x8a90cab2b38dba80c64b7734e58ee1db38b8992e': { name: 'Doodles',           pts: 25, featured: false },
+  '0x5af0d9827e0c53e4799bb226655a1de152a425a5': { name: 'Milady',            pts: 25, featured: false },
+  '0x60e4d786628fea6478f785a6d7e704777c86a7c6': { name: 'MAYC',              pts: 30, featured: false },
+  '0x8821bee2ba0ddf28761afff119d66390d594cd28': { name: 'DeGods',            pts: 30, featured: false },
+  // ── New additions ──────────────────────────────────────────────────────────
+  '0x97630aa70ab14ed9883b41dafccbc11349723043': { name: 'Credits',           pts: 30, featured: true  },
+  '0x86ffb7988913e85a5a07d459a5165ab1273cfe62': { name: 'Original Blokyz',   pts: 25, featured: false },
+};
+
+// ── Robinhood Chain curated projects ─────────────────────────────────────────
+const CURATED_ROBINHOOD = {
+  '0xc21159f412c294ca2c38f2a9ecaaccf9d93ec929': { name: 'Goat Street', pts: 25, featured: false },
 };
 
 const FEATURED_BOOST    = 1.5;   // multiplier applied to featured project pts
@@ -48,6 +56,33 @@ function alchemyNftUrl() {
   const key = process.env.ALCHEMY_API_KEY;
   if (!key) throw new Error('ALCHEMY_API_KEY not set');
   return `https://eth-mainnet.g.alchemy.com/nft/v3/${key}`;
+}
+
+function alchemyRobinhoodNftUrl() {
+  const key = process.env.ALCHEMY_API_KEY;
+  if (!key) throw new Error('ALCHEMY_API_KEY not set');
+  return `https://robinhood-mainnet.g.alchemy.com/nft/v3/${key}`;
+}
+
+// Fetch all NFTs owned by wallet on Robinhood Chain
+async function fetchRobinhoodNFTs(wallet) {
+  const base = alchemyRobinhoodNftUrl();
+  const nfts = [];
+  let pageKey = '';
+  do {
+    const url = new URL(`${base}/getNFTsForOwner`);
+    url.searchParams.set('owner', wallet);
+    url.searchParams.set('withMetadata', 'false');
+    url.searchParams.set('pageSize', '100');
+    if (pageKey) url.searchParams.set('pageKey', pageKey);
+
+    const r = await fetch(url.toString());
+    if (!r.ok) return nfts; // gracefully skip if chain unavailable
+    const data = await r.json();
+    nfts.push(...(data.ownedNfts || []));
+    pageKey = data.pageKey || '';
+  } while (pageKey);
+  return nfts;
 }
 
 // Fetch all NFTs owned by wallet (paginated) — uses NFT API v3 to bypass spam filter
@@ -105,9 +140,10 @@ module.exports = async (req, res) => {
   const wallet = raw.toLowerCase();
 
   try {
-    const [nfts, transfers] = await Promise.all([
+    const [nfts, transfers, robinhoodNfts] = await Promise.all([
       fetchNFTs(wallet),
       fetchInboundTransfers(wallet),
+      fetchRobinhoodNFTs(wallet),
     ]);
 
     // ── 1. Holdings score ───────────────────────────────────────────────────
@@ -122,6 +158,19 @@ module.exports = async (req, res) => {
       if (!proj || heldContracts.has(contract)) continue;
       heldContracts.add(contract);
       holdingsScore += proj.featured
+        ? Math.round(proj.pts * FEATURED_BOOST)
+        : proj.pts;
+    }
+
+    // ── 1c. Robinhood Chain holdings ────────────────────────────────────────
+    let robinhoodScore = 0;
+    const heldRobinhoodContracts = new Set();
+    for (const nft of robinhoodNfts) {
+      const contract = (nft.contract?.address || nft.contractAddress || '').toLowerCase();
+      const proj = CURATED_ROBINHOOD[contract];
+      if (!proj || heldRobinhoodContracts.has(contract)) continue;
+      heldRobinhoodContracts.add(contract);
+      robinhoodScore += proj.featured
         ? Math.round(proj.pts * FEATURED_BOOST)
         : proj.pts;
     }
@@ -197,7 +246,7 @@ module.exports = async (req, res) => {
 
     // ── Total ────────────────────────────────────────────────────────────────
     const total = holdingsScore + durationScore + diversityScore + mintScore + volumeScore
-                + genNftScore + genDivScore + genMintScore;
+                + genNftScore + genDivScore + genMintScore + robinhoodScore;
 
     const breakdown = {
       holdings:      holdingsScore,
@@ -208,7 +257,11 @@ module.exports = async (req, res) => {
       gen_nfts:      genNftScore,
       gen_diversity: genDivScore,
       gen_mints:     genMintScore,
-      projects:      [...heldContracts].map(c => CURATED[c]?.name).filter(Boolean),
+      projects:      [
+                       ...[...heldContracts].map(c => CURATED[c]?.name),
+                       ...[...heldRobinhoodContracts].map(c => CURATED_ROBINHOOD[c]?.name),
+                     ].filter(Boolean),
+      robinhood_score: robinhoodScore,
       nft_count:     nfts.length,
       collection_count: allContracts.size,
       eth_volume:    totalEth,

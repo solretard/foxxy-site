@@ -3,322 +3,361 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FOXXY — Point Giveaway</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<title>FOXXY — Free Points Giveaway</title>
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --ink:#1C2528; --paper:#EDEEE8; --fur:#E4E0D2; --steel:#8D9AA0;
-  --cord:#9A3F35; --line:#33434A; --ink-2:#222D31;
-  --green:#3d9e6f;
+  --ink:#1C2528; --paper:#EDEEE8; --fur:#E4E0D2;
+  --steel:#8D9AA0; --cord:#9A3F35; --line:#33434A;
+  --ink-2:#222D31; --green:#3d9e6f; --gold:#c9a84c;
 }
-*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
-html { background:var(--ink); min-height:100vh; }
-body {
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--ink);min-height:100vh}
+body{
   font-family:"Zen Kaku Gothic New",Helvetica,Arial,sans-serif;
-  background:var(--ink); color:var(--paper);
+  background:var(--ink);color:var(--paper);
   min-height:100vh;
-  display:flex; flex-direction:column; align-items:center;
-  padding:40px 20px 60px;
+  display:flex;flex-direction:column;align-items:center;
+  padding:0 20px 80px;
   -webkit-font-smoothing:antialiased;
 }
-
-/* dot grain */
-body::before {
-  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
   background-image:radial-gradient(rgba(237,238,232,.055) 1px,transparent 1px);
   background-size:4px 4px;
 }
 
-.wrap { position:relative; z-index:1; width:100%; max-width:520px; }
+.wrap{position:relative;z-index:1;width:100%;max-width:540px}
 
-/* HEADER */
-header {
-  display:flex; align-items:center; justify-content:space-between;
-  border-bottom:1px solid var(--line); padding-bottom:20px; margin-bottom:48px;
+/* ── HERO BANNER ── */
+.hero-band{
+  width:100%;background:var(--cord);
+  padding:10px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:40px;
 }
-.brand {
+.hero-band .brand{
   font-family:"Shippori Mincho B1",Georgia,serif;
-  font-weight:800; font-size:14px; letter-spacing:.28em; color:var(--paper);
+  font-weight:800;font-size:13px;letter-spacing:.28em;color:var(--paper);
 }
-.pill {
-  font-size:8px; letter-spacing:.2em; color:var(--cord);
-  border:1px solid rgba(154,63,53,.5); padding:4px 12px; text-transform:uppercase;
-  display:flex; align-items:center; gap:7px;
+.live-dot{display:flex;align-items:center;gap:6px;font-size:9px;letter-spacing:.18em;color:var(--paper);text-transform:uppercase}
+.live-dot::before{
+  content:"";width:6px;height:6px;border-radius:50%;background:var(--paper);
+  animation:pulse 1.4s ease-in-out infinite;
 }
-.pill-dot { width:5px; height:5px; border-radius:50%; background:var(--cord); }
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* HERO */
-.hero { margin-bottom:40px; }
-.hero h1 {
+/* ── MAIN HEADLINE ── */
+.headline{text-align:center;padding:0 8px;margin-bottom:36px}
+.overline{
+  font-size:9px;letter-spacing:.25em;color:var(--cord);
+  text-transform:uppercase;margin-bottom:16px;display:block;
+}
+.headline h1{
   font-family:"Shippori Mincho B1",Georgia,serif;
-  font-weight:800; font-size:clamp(32px,7vw,48px); line-height:1.1;
-  color:var(--paper); margin-bottom:14px;
+  font-weight:800;font-size:clamp(42px,10vw,64px);line-height:1.05;
+  color:var(--paper);margin-bottom:16px;
 }
-.hero h1 .accent { color:var(--cord); }
-.hero p { font-size:14px; color:var(--steel); line-height:1.65; }
-
-/* SLOT COUNTER */
-.slots-bar {
-  border:1px solid var(--line); background:var(--ink-2);
-  padding:16px 20px; margin-bottom:36px;
-  display:flex; align-items:center; justify-content:space-between; gap:16px;
-}
-.slots-text { font-size:12px; color:var(--steel); }
-.slots-num {
+.pts-badge{
+  display:inline-block;
+  background:var(--cord);
   font-family:"Shippori Mincho B1",Georgia,serif;
-  font-size:28px; font-weight:800; color:var(--cord); line-height:1;
+  font-size:clamp(42px,10vw,64px);font-weight:800;
+  color:var(--paper);padding:2px 18px;line-height:1.1;
 }
-.slots-label { font-size:8px; letter-spacing:.14em; color:var(--steel); display:block; margin-top:2px; }
-.slots-track { flex:1; height:4px; background:var(--line); }
-.slots-fill  { height:100%; background:var(--cord); transition:width .6s ease; }
+.headline p{font-size:14px;color:var(--steel);line-height:1.7;margin-top:14px}
 
-/* STEPS */
-.steps { margin-bottom:36px; display:flex; flex-direction:column; gap:0; }
-.step {
-  display:flex; gap:18px; align-items:flex-start;
-  padding:20px 0; border-bottom:1px solid var(--line);
+/* ── SLOT COUNTER ── */
+.slots-box{
+  border:1px solid var(--cord);background:var(--ink-2);
+  padding:20px 24px;margin-bottom:40px;text-align:center;
 }
-.step:first-child { padding-top:0; }
-.step-num {
+.slots-top{display:flex;align-items:baseline;justify-content:center;gap:10px;margin-bottom:12px}
+.slots-num{
   font-family:"Shippori Mincho B1",Georgia,serif;
-  font-size:20px; font-weight:800; color:var(--cord); line-height:1;
-  flex-shrink:0; width:24px;
+  font-size:56px;font-weight:800;color:var(--cord);line-height:1;
 }
-.step-body h3 {
-  font-size:13px; font-weight:700; color:var(--paper); margin-bottom:5px;
-}
-.step-body p { font-size:12px; color:var(--steel); line-height:1.6; }
+.slots-of{font-size:18px;color:var(--steel);font-weight:700}
+.slots-label{font-size:10px;letter-spacing:.18em;color:var(--steel);text-transform:uppercase;margin-bottom:12px}
+.track{height:5px;background:var(--line);border-radius:0}
+.fill{height:100%;background:var(--cord);transition:width .6s ease}
+.slots-sub{font-size:11px;color:var(--steel);margin-top:10px}
 
-/* TWEET BUTTON */
-.tweet-btn {
-  display:inline-flex; align-items:center; gap:8px; margin-top:12px;
-  background:#000; color:#fff; font-size:12px; font-weight:700;
-  padding:9px 16px; border:none; cursor:pointer; text-decoration:none;
-  letter-spacing:.02em;
+/* ── STEPS ── */
+.steps-label{
+  font-size:9px;letter-spacing:.2em;color:var(--steel);
+  text-transform:uppercase;margin-bottom:16px;display:block;
 }
-.tweet-btn:hover { background:#111; }
-.tweet-icon { width:15px; height:15px; fill:#fff; flex-shrink:0; }
+.steps{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.step{
+  border:1px solid var(--line);background:var(--ink-2);
+  padding:18px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.step-left{display:flex;align-items:center;gap:16px}
+.step-num{
+  font-family:"Shippori Mincho B1",Georgia,serif;
+  font-size:28px;font-weight:800;color:var(--cord);
+  line-height:1;flex-shrink:0;width:32px;
+}
+.step-copy h3{font-size:13px;font-weight:700;color:var(--paper);margin-bottom:3px}
+.step-copy p{font-size:11px;color:var(--steel);line-height:1.5}
+.step-btn{
+  flex-shrink:0;
+  display:inline-flex;align-items:center;gap:7px;
+  background:#000;color:#fff;
+  font-size:11px;font-weight:700;letter-spacing:.03em;
+  padding:9px 14px;border:none;cursor:pointer;
+  text-decoration:none;white-space:nowrap;
+}
+.step-btn:hover{background:#111}
+.step-btn svg{width:13px;height:13px;fill:#fff;flex-shrink:0}
+.step-btn.done{background:var(--green);pointer-events:none}
 
-/* FORM */
-.form { display:flex; flex-direction:column; gap:12px; }
-.input-wrap { display:flex; flex-direction:column; gap:6px; }
-.input-label { font-size:9px; letter-spacing:.15em; color:var(--steel); text-transform:uppercase; }
-.field {
-  background:var(--ink-2); border:1px solid var(--line); color:var(--paper);
-  padding:13px 14px; font-size:13px; font-family:inherit;
-  outline:none; width:100%;
+/* ── FORM ── */
+.form-section{border:1px solid var(--cord);padding:24px;margin-bottom:12px}
+.form-title{
+  font-family:"Shippori Mincho B1",Georgia,serif;
+  font-size:16px;font-weight:800;color:var(--paper);
+  margin-bottom:20px;
+}
+.form{display:flex;flex-direction:column;gap:12px}
+.input-wrap{display:flex;flex-direction:column;gap:6px}
+.lbl{font-size:9px;letter-spacing:.15em;color:var(--steel);text-transform:uppercase}
+.field{
+  background:var(--ink);border:1px solid var(--line);
+  color:var(--paper);padding:13px 14px;
+  font-size:13px;font-family:inherit;outline:none;width:100%;
   transition:border-color .2s;
 }
-.field::placeholder { color:var(--steel); opacity:.6; }
-.field:focus { border-color:var(--cord); }
-.submit-btn {
-  background:var(--cord); color:var(--paper);
+.field::placeholder{color:var(--steel);opacity:.5}
+.field:focus{border-color:var(--cord)}
+.submit-btn{
+  background:var(--cord);color:var(--paper);
   font-family:"Shippori Mincho B1",Georgia,serif;
-  font-weight:800; font-size:14px; letter-spacing:.05em;
-  border:none; cursor:pointer; padding:16px;
-  transition:opacity .2s; width:100%;
+  font-weight:800;font-size:16px;letter-spacing:.05em;
+  border:none;cursor:pointer;padding:18px;
+  width:100%;transition:opacity .2s;margin-top:4px;
 }
-.submit-btn:hover:not(:disabled) { opacity:.88; }
-.submit-btn:disabled { opacity:.4; cursor:not-allowed; }
+.submit-btn:hover:not(:disabled){opacity:.88}
+.submit-btn:disabled{opacity:.4;cursor:not-allowed}
 
-/* RESULT STATES */
-.result {
-  display:none; border:1px solid var(--line);
-  background:var(--ink-2); padding:24px; text-align:center;
-}
-.result.success { border-color:var(--green); }
-.result.error   { border-color:var(--cord); }
-.result-num {
+/* ── RESULT ── */
+.result{display:none;border:1px solid var(--line);background:var(--ink-2);padding:28px;text-align:center;margin-bottom:12px}
+.result.success{border-color:var(--green)}
+.result.error{border-color:var(--cord)}
+.result-icon{font-size:36px;margin-bottom:12px}
+.result-slot{
   font-family:"Shippori Mincho B1",Georgia,serif;
-  font-size:48px; font-weight:800; color:var(--cord);
-  line-height:1; margin-bottom:8px;
+  font-size:52px;font-weight:800;color:var(--green);line-height:1;margin-bottom:8px;
 }
-.result-num.green { color:var(--green); }
-.result-msg { font-size:13px; color:var(--steel); line-height:1.6; }
-.result-msg strong { color:var(--paper); }
+.result-msg{font-size:13px;color:var(--steel);line-height:1.7}
+.result-msg strong{color:var(--paper)}
+.result-msg a{color:var(--fur)}
 
-/* CLOSED state */
-.closed-banner {
-  display:none; border:1px solid var(--cord);
-  background:rgba(154,63,53,.1); padding:20px; text-align:center;
-  font-size:13px; color:var(--fur); margin-top:12px;
-}
+/* CLOSED */
+.closed-msg{display:none;text-align:center;border:1px solid var(--cord);background:rgba(154,63,53,.08);padding:24px;font-size:13px;color:var(--fur)}
 
 /* FOOTER */
-footer {
-  margin-top:56px; padding-top:20px; border-top:1px solid var(--line);
-  font-size:10px; letter-spacing:.1em; color:var(--steel); text-align:center;
-}
-footer a { color:var(--steel); text-decoration:none; }
-footer a:hover { color:var(--fur); }
+footer{margin-top:48px;text-align:center;font-size:10px;letter-spacing:.1em;color:var(--steel)}
+footer a{color:var(--steel);text-decoration:none}
+footer a:hover{color:var(--fur)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div class="brand">FOXXY</div>
-    <div class="pill"><span class="pill-dot"></span>Point Giveaway</div>
-  </header>
 
-  <div class="hero">
-    <h1>50 wallets.<br><span class="accent">+20 pts</span> each.</h1>
-    <p>First come, first served. Tweet, drop your wallet, and the points land on your FOXXY score automatically.</p>
+  <!-- top bar -->
+  <div class="hero-band">
+    <div class="brand">FOXXY</div>
+    <div class="live-dot">Giveaway Live</div>
+  </div>
+
+  <!-- headline -->
+  <div class="headline">
+    <span class="overline">First Come First Served · 50 spots only</span>
+    <h1>Get <span class="pts-badge">+20 pts</span><br>for free.</h1>
+    <p>50 wallets. 20 FOXXY points each.<br>Do the three things below, drop your wallet — you're in.</p>
   </div>
 
   <!-- slot counter -->
-  <div class="slots-bar" id="slotsBar">
-    <div>
-      <div class="slots-text">Slots remaining</div>
-    </div>
-    <div style="text-align:right">
+  <div class="slots-box">
+    <div class="slots-top">
       <div class="slots-num" id="slotsLeft">—</div>
-      <span class="slots-label">OF 50</span>
+      <div class="slots-of">/ 50</div>
     </div>
-    <div class="slots-track"><div class="slots-fill" id="slotsFill" style="width:100%"></div></div>
+    <div class="slots-label">slots remaining</div>
+    <div class="track"><div class="fill" id="slotsFill" style="width:100%"></div></div>
+    <div class="slots-sub">Points land on your score automatically after the giveaway closes</div>
   </div>
 
   <!-- steps -->
+  <span class="steps-label">Do all three to qualify</span>
   <div class="steps">
     <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-body">
-        <h3>Tweet about FOXXY</h3>
-        <p>Hit the button below — it opens a pre-filled tweet. Post it.</p>
-        <a class="tweet-btn" id="tweetBtn" href="#" target="_blank" rel="noopener">
-          <svg class="tweet-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.259 5.631L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
-          </svg>
-          Post on X
-        </a>
+      <div class="step-left">
+        <div class="step-num">1</div>
+        <div class="step-copy">
+          <h3>Like our pinned post</h3>
+          <p>Go to the FOXXY X page and like the pinned post</p>
+        </div>
       </div>
+      <a class="step-btn" href="https://x.com/sol_retard" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.259 5.631L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>
+        Like
+      </a>
     </div>
 
     <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-body">
-        <h3>Paste your wallet</h3>
-        <p>Enter the ETH wallet you want the points added to, then paste the link to your tweet.</p>
-
-        <form class="form" id="giveawayForm" style="margin-top:16px">
-          <div class="input-wrap">
-            <label class="input-label" for="walletInput">Your ETH wallet</label>
-            <input class="field" id="walletInput" type="text"
-              placeholder="0x..." autocomplete="off" spellcheck="false">
-          </div>
-          <div class="input-wrap">
-            <label class="input-label" for="tweetInput">Tweet URL (optional but helps)</label>
-            <input class="field" id="tweetInput" type="url"
-              placeholder="https://x.com/yourhandle/status/...">
-          </div>
-          <button class="submit-btn" type="submit" id="submitBtn">Claim my slot →</button>
-        </form>
-
-        <div class="closed-banner" id="closedBanner">
-          All 50 slots are gone. Keep an eye out for the next round.
+      <div class="step-left">
+        <div class="step-num">2</div>
+        <div class="step-copy">
+          <h3>Quote tweet it</h3>
+          <p>Quote the pinned post — say anything, tag a friend</p>
         </div>
       </div>
+      <a class="step-btn" href="https://x.com/sol_retard" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.259 5.631L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>
+        Quote
+      </a>
+    </div>
+
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num">3</div>
+        <div class="step-copy">
+          <h3>Drop a comment</h3>
+          <p>Reply to the pinned post with your wallet or anything</p>
+        </div>
+      </div>
+      <a class="step-btn" href="https://x.com/sol_retard" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.259 5.631L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>
+        Comment
+      </a>
     </div>
   </div>
 
-  <!-- result -->
+  <!-- result (shown after submit) -->
   <div class="result" id="resultBox">
-    <div class="result-num" id="resultNum"></div>
+    <div class="result-icon" id="resultIcon"></div>
+    <div class="result-slot" id="resultSlot"></div>
     <div class="result-msg" id="resultMsg"></div>
+  </div>
+
+  <!-- form -->
+  <div class="form-section" id="formSection">
+    <div class="form-title">Done all three? Drop your wallet ↓</div>
+    <form class="form" id="giveawayForm">
+      <div class="input-wrap">
+        <label class="lbl" for="walletInput">Your ETH wallet address</label>
+        <input class="field" id="walletInput" type="text"
+          placeholder="0x..." autocomplete="off" spellcheck="false">
+      </div>
+      <div class="input-wrap">
+        <label class="lbl" for="tweetInput">Your quote tweet URL (optional)</label>
+        <input class="field" id="tweetInput" type="url"
+          placeholder="https://x.com/yourhandle/status/...">
+      </div>
+      <button class="submit-btn" type="submit" id="submitBtn">Claim my spot →</button>
+    </form>
+  </div>
+
+  <div class="closed-msg" id="closedMsg">
+    All 50 slots are gone. Stay tuned for the next round 👀
   </div>
 
   <footer>
     <a href="/">foxxyeth.xyz</a> &nbsp;·&nbsp; Points credited after giveaway closes
   </footer>
+
 </div>
-
 <script>
-(function () {
+(function(){
   const TOTAL = 50;
-  // Pre-filled tweet text
-  const TWEET_TEXT = encodeURIComponent(
-    'Just claimed my FOXXY points 🦊\n\nFOXXY rewards you for your NFT interactions on-chain — check your score at foxxyeth.xyz'
-  );
-  const TWEET_URL = `https://x.com/intent/tweet?text=${TWEET_TEXT}`;
-  document.getElementById('tweetBtn').href = TWEET_URL;
 
-  // Load slot count on page load
-  async function loadSlots() {
-    try {
+  async function loadSlots(){
+    try{
       const r = await fetch('/api/giveaway-status');
-      if (!r.ok) return;
-      const { remaining } = await r.json();
+      if(!r.ok) return;
+      const {remaining} = await r.json();
       updateSlots(remaining);
-    } catch {}
+    }catch{}
   }
 
-  function updateSlots(remaining) {
+  function updateSlots(remaining){
     const left = Math.max(0, remaining);
     document.getElementById('slotsLeft').textContent = left;
-    document.getElementById('slotsFill').style.width = (left / TOTAL * 100) + '%';
-    if (left === 0) {
-      document.getElementById('giveawayForm').style.display = 'none';
-      document.getElementById('closedBanner').style.display = 'block';
-    }
+    document.getElementById('slotsFill').style.width = (left/TOTAL*100)+'%';
+    if(left === 0) showClosed();
+  }
+
+  function showClosed(){
+    document.getElementById('formSection').style.display = 'none';
+    document.getElementById('closedMsg').style.display = 'block';
   }
 
   loadSlots();
 
-  // Form submit
-  document.getElementById('giveawayForm').addEventListener('submit', async function (e) {
+  document.getElementById('giveawayForm').addEventListener('submit', async function(e){
     e.preventDefault();
     const wallet   = document.getElementById('walletInput').value.trim();
     const tweetUrl = document.getElementById('tweetInput').value.trim();
     const btn      = document.getElementById('submitBtn');
 
-    if (!/^0x[a-fA-F0-9]{40}$/i.test(wallet)) {
-      showResult('error', '!', 'That doesn\'t look like a valid ETH wallet. Double-check and try again.');
+    if(!/^0x[a-fA-F0-9]{40}$/i.test(wallet)){
+      showResult('error','','!','That doesn\'t look like a valid ETH wallet. Check and try again.');
       return;
     }
 
     btn.disabled = true;
     btn.textContent = 'Claiming…';
 
-    try {
-      const r = await fetch('/api/giveaway', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ wallet, tweet_url: tweetUrl }),
+    try{
+      const r = await fetch('/api/giveaway',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({wallet, tweet_url: tweetUrl}),
       });
       const data = await r.json();
 
-      if (r.ok && data.success) {
-        showResult('success', `#${data.slot}`, `You got <strong>slot ${data.slot}</strong> — ${data.remaining} spots left.<br><br>Points will be credited to your wallet after the giveaway closes. Check your score at <a href="/" style="color:var(--fur)">foxxyeth.xyz</a>.`);
+      if(r.ok && data.success){
+        showResult('success','🎉','#'+data.slot,
+          `You got <strong>slot ${data.slot} of ${TOTAL}</strong>.<br>
+           ${data.remaining} spots left.<br><br>
+           Points drop to your wallet after the giveaway closes —
+           check your score at <a href="/">foxxyeth.xyz</a>.`
+        );
         updateSlots(data.remaining);
-        document.getElementById('giveawayForm').style.display = 'none';
-      } else if (r.status === 409 && data.slot) {
-        showResult('success', `#${data.slot}`, `This wallet already has <strong>slot ${data.slot}</strong>. You're in!`);
-      } else if (r.status === 409) {
-        showResult('error', '×', 'All 50 slots are taken. Giveaway is closed.');
-        document.getElementById('giveawayForm').style.display = 'none';
-        document.getElementById('closedBanner').style.display = 'block';
+        document.getElementById('formSection').style.display = 'none';
+      } else if(r.status===409 && data.slot){
+        showResult('success','✓','#'+data.slot,
+          `This wallet already has <strong>slot ${data.slot}</strong>. You're locked in.`
+        );
+      } else if(r.status===409){
+        showResult('error','','×','All 50 slots are taken. Giveaway is closed.');
+        showClosed();
       } else {
-        showResult('error', '!', data.error || 'Something went wrong. Try again.');
+        showResult('error','','!', data.error||'Something went wrong. Try again.');
         btn.disabled = false;
-        btn.textContent = 'Claim my slot →';
+        btn.textContent = 'Claim my spot →';
       }
-    } catch {
-      showResult('error', '!', 'Network error. Try again.');
+    }catch{
+      showResult('error','','!','Network error. Try again.');
       btn.disabled = false;
-      btn.textContent = 'Claim my slot →';
+      btn.textContent = 'Claim my spot →';
     }
   });
 
-  function showResult(type, num, msg) {
-    const box = document.getElementById('resultBox');
-    const numEl = document.getElementById('resultNum');
-    const msgEl = document.getElementById('resultMsg');
-    box.className = 'result ' + type;
+  function showResult(type, icon, slot, msg){
+    const box  = document.getElementById('resultBox');
+    box.className = 'result '+type;
     box.style.display = 'block';
-    numEl.className = 'result-num' + (type === 'success' ? ' green' : '');
-    numEl.textContent = num;
-    msgEl.innerHTML = msg;
-    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    document.getElementById('resultIcon').textContent = icon;
+    const slotEl = document.getElementById('resultSlot');
+    slotEl.textContent = slot;
+    slotEl.style.color = type==='success' ? 'var(--green)' : 'var(--cord)';
+    document.getElementById('resultMsg').innerHTML = msg;
+    box.scrollIntoView({behavior:'smooth',block:'nearest'});
   }
 })();
 </script>

@@ -244,12 +244,21 @@ module.exports = async (req, res) => {
     const totalEth = 0;   // kept for breakdown field compatibility
     const volumeScore = Math.min(transfers.length * VOL_PTS_PER_TX, VOL_TX_CAP);
 
+    // ── Bonus points (giveaways, campaigns) ─────────────────────────────────
+    const db = getDb();
+    await ensureSchema();
+    const bonusRows = await db`
+      SELECT COALESCE(SUM(points),0)::int AS pts FROM bonuses WHERE wallet = ${wallet}
+    `;
+    const bonusScore = bonusRows[0]?.pts || 0;
+
     // ── Total ────────────────────────────────────────────────────────────────
     const total = holdingsScore + durationScore + diversityScore + mintScore + volumeScore
-                + genNftScore + genDivScore + genMintScore + robinhoodScore;
+                + genNftScore + genDivScore + genMintScore + robinhoodScore + bonusScore;
 
     const breakdown = {
       holdings:      holdingsScore,
+      bonus:         bonusScore,
       duration:      durationScore,
       diversity:     diversityScore,
       mints:         mintScore,
@@ -269,8 +278,6 @@ module.exports = async (req, res) => {
     };
 
     // ── Upsert to DB ─────────────────────────────────────────────────────────
-    const db = getDb();
-    await ensureSchema();
     await db`
       INSERT INTO scores (wallet, total_score, breakdown)
       VALUES (${wallet}, ${total}, ${JSON.stringify(breakdown)})

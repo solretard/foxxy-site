@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/png" href="assets/fox.png">
+<title>FOXXY — Partner Quest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1C2528;--ink-2:#222D31;--paper:#EDEEE8;--fur:#E4E0D2;
+  --steel:#8D9AA0;--steel-dim:#5D6C72;--cord:#9A3F35;--line:#33434A;
+  --display:"Shippori Mincho B1",Georgia,serif;
+  --body:"Zen Kaku Gothic New","Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;background:var(--ink);color:var(--fur);font-family:var(--body);font-size:17px;line-height:1.75;-webkit-font-smoothing:antialiased;}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(rgba(237,238,232,.09) 1px,transparent 1px);
+  background-size:4px 4px;opacity:.5;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 28px;}
+a{color:inherit;text-decoration:none;}
+:focus-visible{outline:2px solid var(--paper);outline-offset:3px;}
+
+/* ── NAV ── */
+nav{border-bottom:1px solid var(--line);}
+nav .wrap{max-width:1120px;display:flex;align-items:center;justify-content:space-between;height:68px;}
+nav img{height:26px;}
+.navlinks{display:flex;gap:26px;font-size:14px;letter-spacing:.06em;color:var(--steel);}
+.navlinks a:hover{color:var(--paper);}
+@media(max-width:560px){.navlinks{display:none;}}
+
+/* ── HERO ── */
+.hero{padding:56px 0 44px;text-align:center;border-bottom:1px solid var(--line);}
+.badge-label{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.14em;
+  color:var(--cord);border:1px solid var(--cord);padding:6px 16px;margin-bottom:24px;}
+.badge-label .dot{width:6px;height:6px;border-radius:50%;background:var(--cord);
+  animation:pulse 1.4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(1.4);}}
+h1{font-family:var(--display);font-weight:800;font-size:40px;line-height:1.15;color:var(--paper);margin:0 0 14px;}
+.lede{font-size:16px;color:var(--steel);max-width:52ch;margin:0 auto 24px;}
+.pts-total{font-family:var(--display);font-size:48px;font-weight:800;color:var(--cord);line-height:1;}
+.pts-label{font-size:13px;letter-spacing:.12em;color:var(--steel-dim);margin-top:4px;}
+@media(max-width:560px){h1{font-size:28px;}.pts-total{font-size:38px;}}
+
+/* ── STEPS BAR ── */
+.steps-bar{padding:36px 0 32px;border-bottom:1px solid var(--line);}
+.steps{display:flex;align-items:flex-start;gap:0;counter-reset:step;}
+.step{flex:1;position:relative;text-align:center;padding:0 12px;}
+.step::before{counter-increment:step;content:counter(step);display:flex;align-items:center;
+  justify-content:center;width:36px;height:36px;border:1px solid var(--line);
+  border-radius:50%;font-family:var(--display);font-size:16px;font-weight:600;
+  color:var(--steel);margin:0 auto 10px;background:var(--ink);}
+.step:not(:last-child)::after{content:"";position:absolute;top:18px;left:calc(50% + 18px);
+  right:calc(-50% + 18px);height:1px;background:var(--line);}
+.step .step-label{font-size:12px;letter-spacing:.10em;color:var(--steel-dim);}
+@media(max-width:600px){.step .step-label{font-size:11px;}.steps-bar{padding:24px 0;}}
+
+/* ── PARTNER CARDS ── */
+.partners{padding:40px 0;}
+.partners-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+@media(max-width:720px){.partners-grid{grid-template-columns:1fr;max-width:420px;margin:0 auto;}}
+
+.card{background:var(--ink-2);border:1px solid var(--line);padding:28px 24px 24px;
+  transition:border-color .2s;position:relative;}
+.card:hover{border-color:var(--steel-dim);}
+.card.done{border-color:rgba(154,63,53,.5);}
+
+.pts-badge{position:absolute;top:16px;right:16px;
+  font-family:var(--display);font-size:13px;font-weight:600;
+  color:var(--cord);border:1px solid rgba(154,63,53,.4);padding:3px 10px;
+  background:rgba(154,63,53,.08);letter-spacing:.05em;}
+
+.card-pfp{width:72px;height:72px;border-radius:50%;object-fit:cover;
+  display:block;margin:0 auto 16px;background:var(--line);}
+.card-handle{font-family:var(--display);font-size:16px;font-weight:600;color:var(--paper);
+  text-align:center;margin:0 0 4px;}
+.card-name{font-size:13px;color:var(--steel);text-align:center;margin:0 0 20px;}
+
+.actions{display:flex;flex-direction:column;gap:9px;}
+.action-btn{display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;border:1px solid var(--line);color:var(--fur);
+  font-family:var(--body);font-size:13px;font-weight:500;letter-spacing:.05em;
+  transition:border-color .15s,color .15s,background .15s;cursor:pointer;
+  text-decoration:none;background:transparent;}
+.action-btn:hover{border-color:var(--steel);color:var(--paper);}
+.action-btn .action-icon{font-size:14px;opacity:.6;}
+.action-btn .action-check{width:16px;height:16px;border:1px solid var(--steel-dim);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:9px;flex-shrink:0;transition:background .2s,border-color .2s;}
+.action-btn.checked .action-check{background:var(--cord);border-color:var(--cord);color:#fff;}
+.action-btn.checked{border-color:rgba(154,63,53,.35);color:var(--steel);}
+
+.card-done-overlay{display:none;position:absolute;inset:0;background:rgba(28,37,40,.85);
+  align-items:center;justify-content:center;flex-direction:column;gap:8px;
+  font-family:var(--display);font-size:15px;color:var(--cord);}
+.card-done-overlay .check-big{font-size:28px;}
+.card.done .card-done-overlay{display:flex;}
+
+/* ── CLAIM SECTION ── */
+.claim-section{padding:0 0 72px;}
+.claim-box{border:1px solid var(--line);padding:40px 36px;text-align:center;
+  background:var(--ink-2);max-width:560px;margin:0 auto;}
+.claim-box h2{font-family:var(--display);font-size:24px;font-weight:800;color:var(--paper);margin:0 0 10px;}
+.claim-box p{font-size:14px;color:var(--steel);margin:0 0 24px;max-width:38ch;margin-left:auto;margin-right:auto;}
+.wallet-row{display:flex;gap:0;}
+.wallet-row input{flex:1;min-width:0;background:var(--ink);border:1px solid var(--line);
+  border-right:none;color:var(--paper);font-family:var(--body);font-size:14px;
+  padding:12px 16px;outline:none;}
+.wallet-row input::placeholder{color:var(--steel-dim);}
+.wallet-row input:focus{border-color:var(--steel);}
+.wallet-row button{background:var(--cord);border:1px solid var(--cord);color:#fff;
+  font-family:var(--body);font-size:14px;font-weight:500;padding:12px 24px;
+  cursor:pointer;transition:background .15s,transform .1s,box-shadow .1s;
+  box-shadow:3px 3px 0 #0E1517;white-space:nowrap;}
+.wallet-row button:hover{background:#B04B40;}
+.wallet-row button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #0E1517;}
+.wallet-row button:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:3px 3px 0 #0E1517;}
+
+#claimMsg{margin-top:16px;min-height:20px;font-size:14px;color:var(--steel);}
+#claimMsg.success{color:var(--cord);}
+#claimMsg.error{color:#C07070;}
+
+/* already claimed banner */
+.claimed-banner{display:none;border:1px solid rgba(154,63,53,.5);background:rgba(154,63,53,.08);
+  padding:20px 24px;text-align:center;max-width:560px;margin:0 auto 32px;}
+.claimed-banner.show{display:block;}
+.claimed-banner strong{font-family:var(--display);font-size:16px;color:var(--cord);display:block;margin-bottom:4px;}
+.claimed-banner span{font-size:13px;color:var(--steel);}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--line);padding:32px 0;}
+footer .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.footer-mark{height:20px;opacity:.5;}
+.footer-links{display:flex;gap:20px;font-size:13px;color:var(--steel-dim);}
+.footer-links a:hover{color:var(--paper);}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a href="index.html"><img src="assets/wordmark.png" alt="FOXXY"></a>
+  <div class="navlinks">
+    <a href="score.html">Score</a>
+    <a href="leaderboard.html">Leaderboard</a>
+    <a href="world.html">How it works</a>
+  </div>
+</div></nav>
+
+<!-- HERO -->
+<div class="hero"><div class="wrap">
+  <div class="badge-label"><span class="dot"></span>PARTNER QUEST — LIVE</div>
+  <h1>Support the ecosystem.<br>Earn your points.</h1>
+  <p class="lede">Follow, like, and retweet three partner NFT projects. Claim up to 60 bonus points added directly to your wallet score.</p>
+  <div class="pts-total">60 PTS</div>
+  <div class="pts-label">MAX REWARD · 20 PTS PER PARTNER · ONE-TIME CLAIM</div>
+</div></div>
+
+<!-- STEPS -->
+<div class="steps-bar"><div class="wrap">
+  <div class="steps">
+    <div class="step"><div class="step-label">Follow, Like &amp; RT each partner</div></div>
+    <div class="step"><div class="step-label">Come back here</div></div>
+    <div class="step"><div class="step-label">Drop your wallet &amp; claim</div></div>
+  </div>
+</div></div>
+
+<!-- PARTNER CARDS -->
+<div class="partners"><div class="wrap">
+  <div class="partners-grid" id="partnersGrid">
+
+    <!-- Partner 1: SoulsClubInc -->
+    <div class="card" id="card-SoulsClubInc">
+      <div class="pts-badge">+20 PTS</div>
+      <img class="card-pfp" id="pfp-SoulsClubInc"
+           src="https://unavatar.io/twitter/SoulsClubInc"
+           onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2272%22 height=%2272%22%3E%3Crect width=%2272%22 height=%2272%22 fill=%22%2333434A%22/%3E%3Ctext x=%2236%22 y=%2244%22 font-family=%22Georgia%22 font-size=%2228%22 fill=%22%238D9AA0%22 text-anchor=%22middle%22%3ESC%3C/text%3E%3C/svg%3E'"
+           alt="Souls Club">
+      <div class="card-handle">@SoulsClubInc</div>
+      <div class="card-name">Souls Club</div>
+      <div class="actions">
+        <a class="action-btn" href="https://twitter.com/intent/follow?screen_name=SoulsClubInc" target="_blank" rel="noopener" onclick="markAction('SoulsClubInc','follow',this)">
+          <span>Follow</span>
+          <span class="action-check">✓</span>
+        </a>
+        <a class="action-btn" href="https://twitter.com/SoulsClubInc" target="_blank" rel="noopener" onclick="markAction('SoulsClubInc','like',this)">
+          <span>Like latest tweet</span>
+          <span class="action-check">✓</span>
+        </a>
+        <a class="action-btn" href="https://twitter.com/SoulsClubInc" target="_blank" rel="noopener" onclick="markAction('SoulsClubInc','rt',this)">
+          <span>Retweet latest tweet</span>
+          <span class="action-check">✓</span>
+        </a>
+      </div>
+      <div class="card-done-overlay"><span class="check-big">✓</span><span>+20 PTS CLAIMED</span></div>
+    </div>
+
+    <!-- Partner 2: VaultlingsNFT -->
+    <div class="card" id="card-VaultlingsNFT">
+      <div class="pts-badge">+20 PTS</div>
+      <img class="card-pfp" id="pfp-VaultlingsNFT"
+           src="https://unavatar.io/twitter/VaultlingsNFT"
+           onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2272%22 height=%2272%22%3E%3Crect width=%2272%22 height=%2272%22 fill=%22%2333434A%22/%3E%3Ctext x=%2236%22 y=%2244%22 font-family=%22Georgia%22 font-size=%2228%22 fill=%22%228D9AA0%22 text-anchor=%22middle%22%3EVL%3C/text%3E%3C/svg%3E'"
+           alt="Vaultlings">
+      <div class="card-handle">@VaultlingsNFT</div>
+      <div class="card-name">Vaultlings</div>
+      <div class="actions">
+        <a class="action-btn" href="https://twitter.com/intent/follow?screen_name=VaultlingsNFT" target="_blank" rel="noopener" onclick="markAction('VaultlingsNFT','follow',this)">
+          <span>Follow</span>
+          <span class="action-check">✓</span>
+        </a>
+        <a class="action-btn" href="https://twitter.com/VaultlingsNFT" target="_blank" rel="noopener" onclick="markAction('VaultlingsNFT','like',this)">
+          <span>Like latest tweet</span>
+          <span class="action-check">✓</span>
+        </a>
+        <a class="action-btn" href="https://twitter.com/VaultlingsNFT" target="_blank" rel="noopener" onclick="markAction('VaultlingsNFT','rt',this)">
+          <span>Retweet latest tweet</span>
+          <span class="action-check">✓</span>
+        </a>
+      </div>
+      <div class="card-done-overlay"><span class="check-big">✓</span><span>+20 PTS CLAIMED</span></div>
+    </div>
+
+    <!-- Partner 3: Brrrbon_ -->
+    <div class="card" id="card-Brrrbon_">
+      <div class="pts-badge">+20 PTS</div>
+      <img class="card-pfp" id="pfp-Brrrbon_"
+           src="https://unavatar.io/twitter/Brrrbon_"
+           onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2272%22 height=%2272%22%3E%3Crect width=%2272%22 height=%2272%22 fill=%22%2333434A%22/%3E%3Ctext x=%2236%22 y=%2244%22 font-family=%22Georgia%22 font-size=%2228%22 fill=%22%238D9AA0%22 text-anchor=%22middle%22%3EBR%3C/text%3E%3C/svg%3E'"
+           alt="Brrrbon">
+      <div class="card-handle">@Brrrbon_</div>
+      <div class="card-name">Brrrbon</div>
+      <div class="actions">
+        <a class="action-btn" href="https://twitter.com/intent/follow?screen_name=Brrrbon_" target="_blank" rel="noopener" onclick="markAction('Brrrbon_','follow',this)">
+          <span>Follow</span>
+          <span class="action-check">✓</span>
+        </a>
+        <a class="action-btn" href="https://twitter.com/Brrrbon_" target="_blank" rel="noopener" onclick="markAction('Brrrbon_','like',this)">
+          <span>Like latest tweet</span>
+          <span class="action-check">✓</span>
+        </a>
+        <a class="action-btn" href="https://twitter.com/Brrrbon_" target="_blank" rel="noopener" onclick="markAction('Brrrbon_','rt',this)">
+          <span>Retweet latest tweet</span>
+          <span class="action-check">✓</span>
+        </a>
+      </div>
+      <div class="card-done-overlay"><span class="check-big">✓</span><span>+20 PTS CLAIMED</span></div>
+    </div>
+
+  </div><!-- /partners-grid -->
+</div></div>
+
+<!-- CLAIM SECTION -->
+<div class="claim-section"><div class="wrap">
+
+  <div class="claimed-banner" id="claimedBanner">
+    <strong>Quest already completed ✓</strong>
+    <span id="claimedDetails">Your wallet already has the partner quest bonus.</span>
+  </div>
+
+  <div class="claim-box" id="claimBox">
+    <h2>Claim your points</h2>
+    <p>Done with the actions above? Drop your wallet address and we'll add your bonus points.</p>
+    <div class="wallet-row">
+      <input type="text" id="walletInput" placeholder="0x…" autocomplete="off" spellcheck="false">
+      <button id="claimBtn" onclick="submitClaim()">Claim 60 PTS</button>
+    </div>
+    <div id="claimMsg"></div>
+  </div>
+
+</div></div>
+
+<footer><div class="wrap">
+  <img class="footer-mark" src="assets/wordmark.png" alt="FOXXY">
+  <div class="footer-links">
+    <a href="score.html">Score checker</a>
+    <a href="leaderboard.html">Leaderboard</a>
+    <a href="world.html">How it works</a>
+  </div>
+</div></footer>
+
+<script>
+(function(){
+  var PARTNERS = ['SoulsClubInc','VaultlingsNFT','Brrrbon_'];
+
+  // ── Restore action checks from localStorage ────────────────────────────
+  function storageKey(partner, action){ return 'fq_' + partner + '_' + action; }
+
+  function markAction(partner, action, el){
+    try { localStorage.setItem(storageKey(partner, action), '1'); } catch(e){}
+    // Don't prevent navigation — let the link open
+    setTimeout(function(){ restoreActions(); }, 300);
+  }
+  window.markAction = markAction;
+
+  function restoreActions(){
+    PARTNERS.forEach(function(p){
+      ['follow','like','rt'].forEach(function(a){
+        var saved = false;
+        try { saved = !!localStorage.getItem(storageKey(p, a)); } catch(e){}
+        if(!saved) return;
+        // find the matching button (3rd action = 'rt', etc.)
+        var card = document.getElementById('card-' + p);
+        if(!card) return;
+        var btns = card.querySelectorAll('.action-btn');
+        var idx = {follow:0,like:1,rt:2}[a];
+        if(btns[idx]) btns[idx].classList.add('checked');
+      });
+    });
+  }
+
+  restoreActions();
+
+  // ── Check wallet on input blur ─────────────────────────────────────────
+  var walletInput = document.getElementById('walletInput');
+  if(walletInput){
+    walletInput.addEventListener('blur', function(){
+      var w = walletInput.value.trim();
+      if(/^0x[a-fA-F0-9]{40}$/i.test(w)) checkStatus(w);
+    });
+  }
+
+  function checkStatus(wallet){
+    fetch('/api/partner-quest?wallet=' + encodeURIComponent(wallet))
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if(!data.claimed) return;
+        // Mark claimed partners
+        data.claimed.forEach(function(c){
+          var card = document.getElementById('card-' + c.partner);
+          if(card) card.classList.add('done');
+        });
+        if(data.fully_claimed){
+          document.getElementById('claimBox').style.display = 'none';
+          var banner = document.getElementById('claimedBanner');
+          banner.classList.add('show');
+          document.getElementById('claimedDetails').textContent =
+            'All 3 partners claimed — ' + data.total_pts + ' pts earned. Nothing left to do here.';
+        } else if(data.claimed.length > 0){
+          var msg = document.getElementById('claimMsg');
+          msg.textContent = data.total_pts + ' pts already claimed for ' + data.claimed.length + ' partner(s). Submit to claim the rest.';
+          // Update button label
+          var remaining = (3 - data.claimed.length) * 20;
+          var btn = document.getElementById('claimBtn');
+          if(btn) btn.textContent = 'Claim ' + remaining + ' PTS';
+        }
+      })
+      .catch(function(){});
+  }
+
+  // ── Submit claim ───────────────────────────────────────────────────────
+  window.submitClaim = function(){
+    var wallet = walletInput.value.trim();
+    var msg = document.getElementById('claimMsg');
+    var btn = document.getElementById('claimBtn');
+
+    if(!/^0x[a-fA-F0-9]{40}$/i.test(wallet)){
+      msg.className = 'error';
+      msg.textContent = 'Please enter a valid wallet address (0x…).';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Claiming…';
+    msg.className = '';
+    msg.textContent = '';
+
+    fetch('/api/partner-quest', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ wallet: wallet }),
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if(data.error){
+        if(data.fully_claimed){
+          document.getElementById('claimBox').style.display = 'none';
+          var banner = document.getElementById('claimedBanner');
+          banner.classList.add('show');
+          document.getElementById('claimedDetails').textContent =
+            'All 3 partners already claimed — ' + data.total_pts + ' pts on your wallet.';
+        } else {
+          msg.className = 'error';
+          msg.textContent = data.error;
+          btn.disabled = false;
+          btn.textContent = 'Claim Points';
+        }
+        return;
+      }
+
+      // Success — mark all claimed partners done
+      if(data.new_partners){
+        data.new_partners.forEach(function(p){
+          var card = document.getElementById('card-' + p);
+          if(card) card.classList.add('done');
+        });
+      }
+
+      msg.className = 'success';
+      msg.textContent = data.message || ('+' + data.new_pts + ' pts added!');
+      btn.textContent = 'Claimed ✓';
+
+      if(data.fully_claimed){
+        setTimeout(function(){
+          document.getElementById('claimBox').style.display = 'none';
+          var banner = document.getElementById('claimedBanner');
+          banner.classList.add('show');
+          document.getElementById('claimedDetails').textContent =
+            'All 3 partners claimed — ' + data.total_pts + ' pts on your wallet.';
+        }, 2000);
+      }
+    })
+    .catch(function(){
+      msg.className = 'error';
+      msg.textContent = 'Something went wrong. Please try again.';
+      btn.disabled = false;
+      btn.textContent = 'Claim Points';
+    });
+  };
+
+})();
+</script>
+</body>
+</html>

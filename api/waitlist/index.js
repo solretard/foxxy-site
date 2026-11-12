@@ -1,5 +1,7 @@
-// POST /api/waitlist — join the waitlist.
+// GET  /api/waitlist        — returns current signup count (also served at /api/waitlist/count via rewrite)
+// POST /api/waitlist        — join the waitlist.
 // Requires an active X connection (fx_id cookie) + all tasks completed.
+// (count merged in here to stay under Vercel Hobby's 12-function limit)
 
 const { unsign, parseCookies } = require('../../lib/crypto');
 const { getDb, ensureSchema } = require('../../lib/db');
@@ -8,6 +10,17 @@ const WALLET_RE = /^0x[a-fA-F0-9]{40}$/;
 const VALID_ERAS = new Set(['I', 'II', 'III', 'IV']);
 
 module.exports = async (req, res) => {
+  if (req.method === 'GET') {
+    try {
+      const sql = getDb();
+      await ensureSchema();
+      const rows = await sql`SELECT COUNT(*) AS count FROM waitlist`;
+      return res.json({ count: parseInt(rows[0].count, 10) });
+    } catch (err) {
+      console.error('count error:', err);
+      return res.status(500).json({ count: 0 });
+    }
+  }
   if (req.method !== 'POST') return res.status(405).end();
 
   // ── Auth check ──────────────────────────────────────────────────────────

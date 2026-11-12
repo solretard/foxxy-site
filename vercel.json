@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/api/waitlist/count", "destination": "/api/waitlist" },
     { "source": "/auth/x/login",    "destination": "/api/auth/x/login" },
     { "source": "/auth/x/callback", "destination": "/api/auth/x/callback" },
     { "source": "/giveaway",        "destination": "/giveaway.html" }

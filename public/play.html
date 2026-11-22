@@ -48,6 +48,15 @@
   .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
   #home{position:fixed;top:14px;left:14px;z-index:5;font:700 12px Inter,sans-serif;letter-spacing:.16em;color:#fff;text-decoration:none;background:rgba(0,0,0,.4);padding:8px 12px;border-radius:7px;border:1px solid rgba(255,255,255,.2)}
   #home:hover{background:rgba(255,255,255,.15)}
+  .walletbox{width:min(420px,92vw);text-align:center}
+  .walletbox form{display:flex;gap:8px}
+  .walletbox input{flex:1;min-width:0;padding:11px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.3);background:rgba(0,0,0,.5);color:#fff;font:600 14px Inter,monospace;outline:none}
+  .walletbox .btn{padding:11px 16px;font-size:13px}
+  #walletSet{font-size:13px;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:9px 12px}
+  #walletSet b{font-family:monospace;font-size:14px}
+  #walletErr{font-size:12px;color:#ff8f8f;min-height:16px;margin-top:6px}
+  #walletStats{font-size:12px;opacity:.75;margin-top:6px}
+  #mute{position:fixed;right:14px;bottom:14px;z-index:20;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.45);color:#fff;font-size:18px;cursor:pointer}
   .bank{background:rgba(15,15,18,.7);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:14px;width:min(440px,92vw)}
   .bank .lbl{margin-bottom:8px}
   .bank form{display:flex;gap:8px}
@@ -80,8 +89,14 @@
       <div class="foxname"><div class="e" id="fe"></div><div class="n" id="fn"></div><div class="d" id="fd"></div></div>
       <button class="arrow" id="next">▶</button>
     </div>
+    <div class="walletbox">
+      <div id="walletSet" class="hidden">Points go to <b id="walletShort"></b> 🔒</div>
+      <form id="walletForm"><input id="walletIn" placeholder="0x... your ETH wallet to earn points" autocomplete="off" spellcheck="false"><button class="btn" type="submit">SAVE</button></form>
+      <div id="walletErr"></div>
+      <div id="walletStats"></div>
+    </div>
     <button class="btn" id="run">RUN</button>
-    <div class="small">Your best run adds up to 150 points to your wallet score<br>Turn at corners or fall · Jump logs · Slide under beams · Slash walls with your katana<br>Practice game. No real funds used.</div>
+    <div class="small">Every run adds points to your wallet score: up to 20 a day, 150 total<br>Turn at corners or fall · Jump logs · Slide under beams · Slash walls with your katana<br>Practice game. No real funds used.</div>
   </div>
 </div>
 
@@ -94,14 +109,11 @@
     <div class="panel"><div class="lbl">SCORE</div><div class="big" id="oScore">0</div></div>
     <div class="panel"><div class="lbl">REACHED</div><div class="big" id="oEra" style="font-size:18px;padding-top:6px">—</div></div>
   </div>
-  <div class="bank" id="bankBox">
-    <div class="lbl">BANK THIS RUN TO YOUR WALLET SCORE · BEST RUN COUNTS, UP TO 150 PTS</div>
-    <form id="bankForm"><input id="bankWallet" placeholder="0x... your ETH wallet" autocomplete="off" spellcheck="false"><button class="btn" type="submit" id="bankBtn">BANK</button></form>
-    <div id="bankMsg"></div>
-  </div>
+  <div class="bank" id="bankBox"><div class="lbl">WALLET POINTS</div><div id="bankMsg"></div></div>
   <div class="row"><button class="btn" id="again">RUN AGAIN</button><button class="btn ghost" id="change">CHANGE FOX</button></div>
 </div>
 
+<button id="mute" title="Sound (M)">🔊</button>
 <div id="loading" class="overlay"><div style="font-size:40px;font-weight:900">FOXXY</div><div id="loadtxt" style="font-size:12px;opacity:.7">Sharpening the blade…</div></div>
 
 <script>window.addEventListener('error', e => { const l = document.getElementById('loadtxt'); if (l) l.textContent = 'Could not load the game: ' + (e.message || 'error'); });</script>
@@ -344,6 +356,100 @@ function poseFox(f, st, dt){
   }
 }
 
+
+/* =========================================================
+   SOUND — effects + era music, generated with WebAudio
+   ========================================================= */
+const Sound = (() => {
+  let ctx = null, master, sfx, music, noiseBuf, muted = false;
+  try { muted = localStorage.getItem('foxxy_mute') === '1'; } catch(e) {}
+  function init(){
+    if (ctx){ if (ctx.state === 'suspended') ctx.resume(); return; }
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    ctx = new AC();
+    master = ctx.createGain(); master.gain.value = muted ? 0 : .9; master.connect(ctx.destination);
+    sfx = ctx.createGain(); sfx.gain.value = .75; sfx.connect(master);
+    music = ctx.createGain(); music.gain.value = .2; music.connect(master);
+    noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+    const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  }
+  function tone(freq, dur, { type = 'sine', vol = .3, to = null, at = 0, attack = .005, dest = null } = {}){
+    if (!ctx) return; const t = ctx.currentTime + at;
+    const o = ctx.createOscillator(), g = ctx.createGain(); o.type = type; o.frequency.setValueAtTime(freq, t);
+    if (to) o.frequency.exponentialRampToValueAtTime(to, t + dur);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + attack); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(g); g.connect(dest || sfx); o.start(t); o.stop(t + dur + .02);
+  }
+  function noise(dur, { vol = .3, type = 'lowpass', f = 1000, to = null, q = 1, at = 0, dest = null } = {}){
+    if (!ctx) return; const t = ctx.currentTime + at;
+    const src = ctx.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
+    const fl = ctx.createBiquadFilter(); fl.type = type; fl.frequency.setValueAtTime(f, t); fl.Q.value = q;
+    if (to) fl.frequency.exponentialRampToValueAtTime(to, t + dur);
+    const g = ctx.createGain(); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    src.connect(fl); fl.connect(g); g.connect(dest || sfx); src.start(t, Math.random() * .5); src.stop(t + dur + .02);
+  }
+  const STEP_F = [650, 1300, 2600, 2100];   // stone, asphalt, data grid, neon floor
+  return {
+    init, tone, noise,
+    get ctx(){ return ctx; }, get musicBus(){ return music; }, get muted(){ return muted; },
+    toggle(){ muted = !muted; try { localStorage.setItem('foxxy_mute', muted ? '1' : '0'); } catch(e) {}
+      if (master) master.gain.setTargetAtTime(muted ? 0 : .9, ctx.currentTime, .05); return muted; },
+    step(era){ noise(.07, { vol: .16, type: 'bandpass', f: STEP_F[era] || 900, q: 1.2 }); tone(95, .06, { vol: .1 }); },
+    jump(){ noise(.25, { vol: .16, type: 'bandpass', f: 500, to: 2500, q: .8 }); tone(220, .18, { type: 'triangle', vol: .1, to: 520 }); },
+    land(){ noise(.1, { vol: .22, f: 400 }); tone(70, .12, { vol: .22, to: 45 }); },
+    slide(){ noise(.55, { vol: .22, type: 'bandpass', f: 1800, to: 350, q: .7 }); },
+    lane(){ noise(.12, { vol: .09, type: 'bandpass', f: 1200, to: 2400, q: 1 }); },
+    slash(){ noise(.18, { vol: .28, type: 'highpass', f: 2500, to: 7000, q: .7 }); tone(1800, .12, { vol: .05, to: 900 }); },
+    cut(){ noise(.3, { vol: .34, type: 'bandpass', f: 900, to: 200, q: .6 }); tone(160, .2, { type: 'square', vol: .06, to: 60 }); tone(2400, .25, { vol: .06, at: .02, to: 1800 }); },
+    crystal(){ tone(1318, .12, { type: 'triangle', vol: .15 }); tone(1975, .18, { type: 'triangle', vol: .13, at: .06 }); },
+    turn(){ noise(.22, { vol: .17, type: 'bandpass', f: 700, to: 2000, q: .9 }); },
+    crash(){ noise(.5, { vol: .5, f: 1200, to: 150 }); tone(110, .5, { vol: .45, to: 35 }); tone(55, .7, { vol: .3 }); },
+    fall(){ tone(700, 1.1, { type: 'triangle', vol: .22, to: 70 }); noise(1, { vol: .12, type: 'bandpass', f: 1500, to: 300 }); },
+    era(){ [392, 494, 587].forEach((f, i) => tone(f, 1.6, { type: 'triangle', vol: .11, at: i * .08, attack: .05 })); noise(1.2, { vol: .07, type: 'highpass', f: 3000 }); },
+    bank(){ tone(988, .1, { type: 'triangle', vol: .14 }); tone(1318, .22, { type: 'triangle', vol: .14, at: .09 }); },
+  };
+})();
+
+const Music = (() => {
+  // 16-step loops per era (semitones from root, null = rest)
+  const M = [
+    { bpm: 96,  root: 62, lead: 'triangle', drums: 'taiko',      // Ancient: pentatonic plucks + taiko
+      bass: [0, null, null, null, 0, null, null, null, -2, null, null, null, -5, null, null, null],
+      arp:  [0, 3, 7, 5, null, 10, 7, null, 12, null, 10, 7, 5, null, 3, null] },
+    { bpm: 112, root: 57, lead: 'square', drums: 'kit',          // Modern: city groove
+      bass: [0, null, 0, null, 0, null, 0, 12, -4, null, -4, null, -2, null, -2, 10],
+      arp:  [12, null, 15, null, 19, null, 15, null, 8, null, 12, null, 10, null, 14, null] },
+    { bpm: 124, root: 60, lead: 'square', drums: 'kit',          // Digital: fast arps
+      bass: [0, null, null, 0, null, null, 0, null, -5, null, null, -5, null, null, -3, null],
+      arp:  [0, 7, 12, 19, 0, 7, 12, 19, -2, 5, 10, 17, -5, 2, 7, 14] },
+    { bpm: 118, root: 55, lead: 'sawtooth', drums: 'kit',        // Cyber: synthwave pulse
+      bass: [0, 0, 12, 0, 0, 0, 12, 0, -4, -4, 8, -4, -2, -2, 10, -2],
+      arp:  [12, null, 19, null, 24, null, 19, 15, 8, null, 15, null, 10, null, 17, 22] },
+  ];
+  let era = 0, playing = false, step = 0, nextT = 0, timer = null;
+  const hz = n => 440 * Math.pow(2, (n - 69) / 12);
+  function tick(){
+    const ctx = Sound.ctx; if (!ctx || !playing) return;
+    while (nextT < ctx.currentTime + .12){
+      const E = M[era], spb = 60 / E.bpm / 4, at = Math.max(0, nextT - ctx.currentTime), i = step % 16, bus = Sound.musicBus;
+      const b = E.bass[i]; if (b !== null) Sound.tone(hz(E.root - 12 + b), spb * (era === 3 ? .9 : 1.8), { type: era === 3 ? 'sawtooth' : 'triangle', vol: era === 3 ? .1 : .22, at, dest: bus });
+      const a = E.arp[i]; if (a !== null) Sound.tone(hz(E.root + 12 + a), spb * (era === 0 ? 3 : 1.2), { type: E.lead, vol: era === 0 ? .12 : .05, at, dest: bus });
+      if (E.drums === 'taiko'){ if (i % 8 === 0 || i === 14) Sound.tone(70, .35, { vol: .5, to: 40, at, dest: bus }); if (i === 12) Sound.noise(.15, { vol: .1, type: 'bandpass', f: 2500, at, dest: bus }); }
+      else {
+        if (i % 4 === 0) Sound.tone(110, .18, { vol: .5, to: 40, at, dest: bus });
+        if (i % 8 === 4) Sound.noise(.16, { vol: .2, type: 'bandpass', f: 1800, q: .8, at, dest: bus });
+        if (i % 2 === 1) Sound.noise(.04, { vol: .06, type: 'highpass', f: 7000, at, dest: bus });
+      }
+      nextT += spb; step++;
+    }
+  }
+  return {
+    start(e){ if (!Sound.ctx) return; era = e; playing = true; step = 0; nextT = Sound.ctx.currentTime + .05; clearInterval(timer); timer = setInterval(tick, 25); },
+    setEra(e){ if (e !== era){ era = e; step = 0; } },
+    stop(){ playing = false; clearInterval(timer); },
+  };
+})();
+
 /* =========================================================
    RENDERER / SCENES
    ========================================================= */
@@ -571,12 +677,32 @@ let s = 0, lat = 0, lane = 1, y = 0, vy = 0, onGround = true, slideT = 0, slashT
 let speed = 14, dist = 0, crystals = 0, turnQueued = false, yaw = 0, camYaw = 0, deadT = 0, deadWhy = '', eraShown = -1, eraMax = 0;
 let skyFrom = new THREE.Color(), skyTo = new THREE.Color(ERAS[0].sky), skyT = 1;
 const debris = [];
-let runToken = null, runTime = 0, banked = false;
+let runToken = null, runTime = 0, banked = false, lastStep = 0;
+let savedWallet = ''; try { savedWallet = localStorage.getItem('foxxy_wallet') || ''; } catch(e) {}
+const shortW = w => w.slice(0, 6) + '…' + w.slice(-4);
+function showWallet(){
+  const has = /^0x[a-fA-F0-9]{40}$/.test(savedWallet);
+  $('walletSet').classList.toggle('hidden', !has); $('walletForm').classList.toggle('hidden', has);
+  if (has){
+    $('walletShort').textContent = shortW(savedWallet);
+    fetch('/api/game?action=best&wallet=' + savedWallet).then(r => r.ok ? r.json() : null).then(j => {
+      if (j && j.ok) $('walletStats').textContent = `Game points ${j.pts}/${j.maxPts} · today ${j.dayPts}/${j.dayCap} · ${j.runs} runs`;
+    }).catch(() => {});
+  }
+}
+$('walletForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const w = $('walletIn').value.trim();
+  if (!/^0x[a-fA-F0-9]{40}$/.test(w)){ $('walletErr').textContent = "That doesn't look like a valid ETH address."; return; }
+  savedWallet = w; $('walletErr').textContent = '';
+  try { localStorage.setItem('foxxy_wallet', w); } catch(err) {}
+  showWallet();
+});
 let best = 0; try { best = +localStorage.getItem('foxxy_era_run_best') || 0; } catch(e) {}
 
 function showSelect(){
   state = 'select'; $('select').classList.remove('hidden'); $('hud').classList.add('hidden'); $('over').classList.add('hidden');
-  updatePick();
+  updatePick(); showWallet();
 }
 function updatePick(){
   const V = VARIANTS[choice]; $('fe').textContent = V.era; $('fn').textContent = V.name; $('fd').textContent = V.desc;
@@ -593,20 +719,22 @@ function startRun(){
   scene.background.set(ERAS[0].sky); scene.fog.color.set(ERAS[0].sky); skyT = 1;
   $('select').classList.add('hidden'); $('over').classList.add('hidden'); $('hud').classList.remove('hidden');
   state = 'run';
-  runToken = null; runTime = 0; banked = false;
-  fetch('/api/game?action=start', { method: 'POST' }).then(r => r.ok ? r.json() : null).then(j => { if (j && j.token) runToken = j.token; }).catch(() => {});
+  runToken = null; runTime = 0; banked = false; lastStep = 0;
+  Sound.init(); Music.start(0);
+  if (savedWallet) fetch('/api/game?action=start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ wallet: savedWallet }) }).then(r => r.ok ? r.json() : null).then(j => { if (j && j.token) runToken = j.token; }).catch(() => {});
 }
 function setEra(e){
   const E = ERAS[e];
   skyFrom.copy(scene.background); skyTo.set(E.sky); skyT = 0;
   hemi.color.set(E.hemiSky); hemi.groundColor.set(E.hemiGround); sun.color.set(E.sun); sun.intensity = E.sunI;
   $('eraTag').textContent = `ERA ${['I', 'II', 'III', 'IV'][e]} · ${E.name}`;
-  if (eraShown !== -1){ $('bannerA').textContent = `ENTERING ERA ${['I', 'II', 'III', 'IV'][e]}`; $('bannerB').textContent = E.name; const b = $('banner'); b.style.opacity = 1; setTimeout(() => b.style.opacity = 0, 1800); }
-  eraShown = e;
+  if (eraShown !== -1){ $('bannerA').textContent = `ENTERING ERA ${['I', 'II', 'III', 'IV'][e]}`; $('bannerB').textContent = E.name; Sound.era(); const b = $('banner'); b.style.opacity = 1; setTimeout(() => b.style.opacity = 0, 1800); }
+  eraShown = e; Music.setEra(e);
 }
 function gameOver(why){
   if (state !== 'run') return;
   state = 'dying'; deadT = 0; deadWhy = why;
+  Music.stop(); if (why === 'fall') Sound.fall(); else Sound.crash();
 }
 function finishOver(){
   state = 'over';
@@ -616,47 +744,44 @@ function finishOver(){
   $('overWhy').textContent = deadWhy === 'fall' ? 'Missed the turn.' : deadWhy === 'cut' ? 'That wall needed a slash.' : deadWhy === 'low' ? 'Jump over the low ones.' : deadWhy === 'high' ? 'Slide under the high ones.' : 'Switch lanes to dodge blocks.';
   $('oDist').textContent = Math.floor(dist).toLocaleString() + ' m'; $('oCrys').textContent = crystals; $('oScore').textContent = score.toLocaleString();
   $('oEra').textContent = ERAS[eraMax].name; $('best').textContent = best.toLocaleString();
-  const msg = $('bankMsg'); msg.className = ''; msg.textContent = runToken ? '' : 'Banking only works on foxxyeth.xyz (no run ticket for this run).';
-  $('bankBtn').disabled = !runToken;
-  try { $('bankWallet').value = localStorage.getItem('foxxy_wallet') || ''; } catch(e) {}
   $('over').classList.remove('hidden');
+  autoBank();
 }
-$('bankForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const msg = $('bankMsg'), btn = $('bankBtn'), wallet = $('bankWallet').value.trim();
-  if (banked){ msg.className = 'err'; msg.textContent = 'This run is already banked.'; return; }
-  if (!/^0x[a-fA-F0-9]{40}$/.test(wallet)){ msg.className = 'err'; msg.textContent = "That doesn't look like a valid ETH address."; return; }
-  if (!runToken){ msg.className = 'err'; msg.textContent = 'No run ticket. Play on foxxyeth.xyz to bank scores.'; return; }
-  try { localStorage.setItem('foxxy_wallet', wallet); } catch(err) {}
-  btn.disabled = true; msg.className = ''; msg.textContent = 'Banking…';
+function autoBank(){
+  const msg = $('bankMsg'); msg.className = '';
+  if (!savedWallet){ msg.textContent = 'No wallet saved: add one on the start screen to earn points.'; return; }
+  if (!runToken){ msg.textContent = 'Points only bank on foxxyeth.xyz.'; return; }
+  if (banked) return;
+  banked = true; msg.textContent = 'Banking…';
   const d = Math.floor(dist);
   fetch('/api/game?action=finish', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ token: runToken, wallet, distance: d, crystals, score: d + crystals * 10, duration: Math.round(runTime * 100) / 100 }) })
+    body: JSON.stringify({ token: runToken, distance: d, crystals, score: d + crystals * 10, duration: Math.round(runTime * 100) / 100 }) })
     .then(r => r.json()).then(j => {
-      if (!j.ok){ msg.className = 'err'; msg.textContent = j.error || 'Could not bank this run.'; btn.disabled = false; return; }
-      banked = true;
+      if (!j.ok){ msg.className = 'err'; msg.textContent = j.error || 'Could not bank this run.'; return; }
       msg.className = 'ok';
-      msg.textContent = j.improved ? `New best: ${j.best.toLocaleString()}. Game points: ${j.pts}/${j.maxPts}` + (j.added > 0 ? ` (+${j.added})` : '') : `Banked. Your best is still ${j.best.toLocaleString()} (${j.pts}/${j.maxPts} pts).`;
-    }).catch(() => { msg.className = 'err'; msg.textContent = 'Network error. Try again.'; btn.disabled = false; });
-});
+      const lim = j.limited === 'daily' ? ' · daily limit reached, come back tomorrow' : j.limited === 'total' ? ' · max game points reached' : '';
+      msg.textContent = `+${j.added} pts to ${shortW(savedWallet)} · today ${j.dayPts}/${j.dayCap} · total ${j.pts}/${j.maxPts}${lim}`;
+      if (j.added > 0) Sound.bank();
+    }).catch(() => { msg.className = 'err'; msg.textContent = 'Network error: this run was not banked.'; });
+}
 
 /* ---- actions ---- */
 function side(dir){ // -1 left, +1 right
   if (state !== 'run') return;
   const seg = segs[cur], toEnd = seg.L - s, want = dir < 0 ? 'L' : 'R';
   if (toEnd < 15 && toEnd > -1 && seg.turn === want){ turnQueued = true; return; }
-  lane = Math.max(0, Math.min(2, lane + dir));
+  const nl = Math.max(0, Math.min(2, lane + dir)); if (nl !== lane) Sound.lane(); lane = nl;
 }
-function jump(){ if (state !== 'run') return; if (onGround){ vy = 11.5; onGround = false; slideT = 0; } }
-function slide(){ if (state !== 'run') return; if (!onGround) vy = -22; slideT = .8; }
+function jump(){ if (state !== 'run') return; if (onGround){ vy = 11.5; onGround = false; slideT = 0; Sound.jump(); } }
+function slide(){ if (state !== 'run') return; if (!onGround) vy = -22; slideT = .8; Sound.slide(); }
 function slash(){
   if (state !== 'run' || slashCd > 0) return;
-  slashT = 0; slashCd = .42;
+  slashT = 0; slashCd = .42; Sound.slash();
   const seg = segs[cur];
   for (const o of seg.obstacles){
     if (o.type !== 'cut' || o.cut) continue;
     const ds = o.s - s; if (ds < -.5 || ds > 6.5) continue;
-    o.cut = true;
+    o.cut = true; Sound.cut();
     const dirX = new THREE.Vector3(1, 0, 0).applyQuaternion(seg.group.quaternion);
     for (const ch of [...o.mesh.children]){
       if (ch.userData.hint){ o.mesh.remove(ch); continue; }
@@ -667,7 +792,7 @@ function slash(){
   }
 }
 addEventListener('keydown', e => {
-  if (state === 'select'){ if (e.code === 'ArrowLeft') { choice = (choice + 3) % 4; updatePick(); } if (e.code === 'ArrowRight'){ choice = (choice + 1) % 4; updatePick(); } if (e.code === 'Enter' || e.code === 'Space') startRun(); return; }
+  if (state === 'select'){ if (document.activeElement && document.activeElement.tagName === 'INPUT') return; if (e.code === 'ArrowLeft') { choice = (choice + 3) % 4; updatePick(); } if (e.code === 'ArrowRight'){ choice = (choice + 1) % 4; updatePick(); } if (e.code === 'Enter' || e.code === 'Space') startRun(); return; }
   if (state === 'over'){ if (document.activeElement && document.activeElement.tagName === 'INPUT') return; if (e.code === 'Enter' || e.code === 'Space') startRun(); return; }
   if (e.repeat) return;
   if (e.code === 'ArrowLeft' || e.code === 'KeyA') side(-1);
@@ -686,6 +811,9 @@ addEventListener('pointerup', e => {
   else if (dy < 0) jump(); else slide();
   touch = null;
 });
+const muteBtn = $('mute'); muteBtn.textContent = Sound.muted ? '🔇' : '🔊';
+muteBtn.onclick = e => { e.stopPropagation(); muteBtn.textContent = Sound.toggle() ? '🔇' : '🔊'; };
+addEventListener('keydown', e => { if (e.code === 'KeyM' && document.activeElement.tagName !== 'INPUT') muteBtn.textContent = Sound.toggle() ? '🔇' : '🔊'; });
 $('prev').onclick = () => { choice = (choice + 3) % 4; updatePick(); };
 $('next').onclick = () => { choice = (choice + 1) % 4; updatePick(); };
 $('run').onclick = startRun; $('again').onclick = startRun; $('change').onclick = showSelect;
@@ -719,7 +847,7 @@ function update(dt){
     if (turnQueued && s >= seg.L - .3){
       const wp = worldPos(seg, s, lat).clone();
       cur++; const ns = segs[cur]; const [rx, rz] = rightOf(ns.dirIdx);
-      s = (wp.x - ns.sx) * ns.dx + (wp.z - ns.sz) * ns.dz; lat = (wp.x - ns.sx) * rx + (wp.z - ns.sz) * rz; lane = 1; turnQueued = false;
+      s = (wp.x - ns.sx) * ns.dx + (wp.z - ns.sz) * ns.dz; lat = (wp.x - ns.sx) * rx + (wp.z - ns.sz) * rz; lane = 1; turnQueued = false; Sound.turn();
       while (segs.length - cur < 6) addSegment(speed);
       while (cur > 2){ scene.remove(segs[0].group); segs.shift(); cur--; }
     } else if (s > seg.L + PW / 2 - .4){ gameOver('fall'); }
@@ -729,7 +857,7 @@ function update(dt){
     // lateral
     lat += (LANES[lane] - lat) * Math.min(1, dt * 12);
     // vertical
-    if (!onGround){ vy -= 32 * dt; y += vy * dt; if (y <= 0){ y = 0; vy = 0; onGround = true; } }
+    if (!onGround){ vy -= 32 * dt; y += vy * dt; if (y <= 0){ y = 0; vy = 0; onGround = true; Sound.land(); } }
     slideT = Math.max(0, slideT - dt); slashCd = Math.max(0, slashCd - dt);
     if (slashT >= 0){ slashT += dt; if (slashT > .34) slashT = -1; }
     // collisions
@@ -743,7 +871,7 @@ function update(dt){
     }
     for (const c of sg.coins){
       if (c.taken) continue;
-      if (Math.abs(c.s - s) < .9 && Math.abs(c.lat - lat) < .9 && y < 1.8){ c.taken = true; c.mesh.visible = false; crystals++; }
+      if (Math.abs(c.s - s) < .9 && Math.abs(c.lat - lat) < .9 && y < 1.8){ c.taken = true; c.mesh.visible = false; crystals++; Sound.crystal(); }
     }
     // HUD
     $('dist').textContent = Math.floor(dist).toLocaleString() + ' m';
@@ -765,6 +893,7 @@ function update(dt){
   yaw += angDiff(targetYaw, yaw) * Math.min(1, dt * 14);
   fox.root.rotation.y = yaw;
   fox.root.rotation.z = (LANES[lane] - lat) * .06;
+  if (state === 'run' && onGround && slideT <= 0){ const st = Math.floor(fox.phase / Math.PI); if (st !== lastStep){ lastStep = st; Sound.step(cs.era); } }
   if (state === 'run') poseFox(fox, { mode: slideT > 0 ? 'slide' : !onGround ? 'air' : 'run', speed, slashT }, dt);
 
   // crystals spin

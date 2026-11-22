@@ -367,9 +367,9 @@ const Sound = (() => {
     if (ctx){ if (ctx.state === 'suspended') ctx.resume(); return; }
     const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
     ctx = new AC();
-    master = ctx.createGain(); master.gain.value = muted ? 0 : .9; master.connect(ctx.destination);
-    sfx = ctx.createGain(); sfx.gain.value = .75; sfx.connect(master);
-    music = ctx.createGain(); music.gain.value = .2; music.connect(master);
+    master = ctx.createGain(); master.gain.value = muted ? 0 : 1; master.connect(ctx.destination);
+    sfx = ctx.createGain(); sfx.gain.value = 1.4; sfx.connect(master);
+    music = ctx.createGain(); music.gain.value = .38; music.connect(master);
     noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
     const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
   }
@@ -391,9 +391,10 @@ const Sound = (() => {
   const STEP_F = [650, 1300, 2600, 2100];   // stone, asphalt, data grid, neon floor
   return {
     init, tone, noise,
+    resume(){ init(); if (ctx && ctx.state !== 'running') ctx.resume().catch(() => {}); },
     get ctx(){ return ctx; }, get musicBus(){ return music; }, get muted(){ return muted; },
     toggle(){ muted = !muted; try { localStorage.setItem('foxxy_mute', muted ? '1' : '0'); } catch(e) {}
-      if (master) master.gain.setTargetAtTime(muted ? 0 : .9, ctx.currentTime, .05); return muted; },
+      if (master) master.gain.setTargetAtTime(muted ? 0 : 1, ctx.currentTime, .05); return muted; },
     step(era){ noise(.07, { vol: .16, type: 'bandpass', f: STEP_F[era] || 900, q: 1.2 }); tone(95, .06, { vol: .1 }); },
     jump(){ noise(.25, { vol: .16, type: 'bandpass', f: 500, to: 2500, q: .8 }); tone(220, .18, { type: 'triangle', vol: .1, to: 520 }); },
     land(){ noise(.1, { vol: .22, f: 400 }); tone(70, .12, { vol: .22, to: 45 }); },
@@ -720,9 +721,11 @@ function startRun(){
   $('select').classList.add('hidden'); $('over').classList.add('hidden'); $('hud').classList.remove('hidden');
   state = 'run';
   runToken = null; runTime = 0; banked = false; lastStep = 0;
-  Sound.init(); Music.start(0);
+  Sound.resume(); Music.start(0);
+  setTimeout(() => { const c = Sound.ctx; if (!Sound.muted && (!c || c.state !== 'running')) { $('turn').style.opacity = 0; showTip('Sound blocked by the browser. Click the 🔊 button to turn it on.'); } }, 800);
   if (savedWallet) fetch('/api/game?action=start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ wallet: savedWallet }) }).then(r => r.ok ? r.json() : null).then(j => { if (j && j.token) runToken = j.token; }).catch(() => {});
 }
+function showTip(t){ $('bannerA').textContent = ''; $('bannerB').textContent = ''; const b = $('banner'); $('bannerA').textContent = t; b.style.opacity = 1; setTimeout(() => b.style.opacity = 0, 3500); }
 function setEra(e){
   const E = ERAS[e];
   skyFrom.copy(scene.background); skyTo.set(E.sky); skyT = 0;
@@ -792,7 +795,7 @@ function slash(){
   }
 }
 addEventListener('keydown', e => {
-  if (state === 'select'){ if (document.activeElement && document.activeElement.tagName === 'INPUT') return; if (e.code === 'ArrowLeft') { choice = (choice + 3) % 4; updatePick(); } if (e.code === 'ArrowRight'){ choice = (choice + 1) % 4; updatePick(); } if (e.code === 'Enter' || e.code === 'Space') startRun(); return; }
+  if (state === 'select'){ if (document.activeElement && document.activeElement.tagName === 'INPUT') return; if (e.code === 'ArrowLeft') { choice = (choice + 3) % 4; updatePick(); } if (e.code === 'ArrowRight'){ choice = (choice + 1) % 4; updatePick(); } if (e.code === 'Enter' || e.code === 'Space') $('run').click(); return; }
   if (state === 'over'){ if (document.activeElement && document.activeElement.tagName === 'INPUT') return; if (e.code === 'Enter' || e.code === 'Space') startRun(); return; }
   if (e.repeat) return;
   if (e.code === 'ArrowLeft' || e.code === 'KeyA') side(-1);
@@ -811,12 +814,20 @@ addEventListener('pointerup', e => {
   else if (dy < 0) jump(); else slide();
   touch = null;
 });
+['pointerdown', 'keydown', 'touchstart'].forEach(ev => addEventListener(ev, () => Sound.resume(), { passive: true }));
 const muteBtn = $('mute'); muteBtn.textContent = Sound.muted ? '🔇' : '🔊';
-muteBtn.onclick = e => { e.stopPropagation(); muteBtn.textContent = Sound.toggle() ? '🔇' : '🔊'; };
+muteBtn.onclick = e => { e.stopPropagation(); Sound.resume(); muteBtn.textContent = Sound.toggle() ? '🔇' : '🔊'; if (!Sound.muted) Sound.crystal(); };
 addEventListener('keydown', e => { if (e.code === 'KeyM' && document.activeElement.tagName !== 'INPUT') muteBtn.textContent = Sound.toggle() ? '🔇' : '🔊'; });
 $('prev').onclick = () => { choice = (choice + 3) % 4; updatePick(); };
 $('next').onclick = () => { choice = (choice + 1) % 4; updatePick(); };
-$('run').onclick = startRun; $('again').onclick = startRun; $('change').onclick = showSelect;
+let warnedNoWallet = false;
+$('run').onclick = () => {
+  const typed = $('walletIn').value.trim();
+  if (!savedWallet && /^0x[a-fA-F0-9]{40}$/.test(typed)){ savedWallet = typed; try { localStorage.setItem('foxxy_wallet', typed); } catch(e) {} showWallet(); }
+  else if (!savedWallet && typed){ $('walletErr').textContent = "That doesn't look like a valid ETH address."; return; }
+  else if (!savedWallet && !warnedNoWallet){ warnedNoWallet = true; $('walletErr').textContent = 'Add your wallet to earn points, or press RUN again to play without points.'; $('walletIn').focus(); return; }
+  startRun();
+}; $('again').onclick = startRun; $('change').onclick = showSelect;
 
 /* =========================================================
    LOOP

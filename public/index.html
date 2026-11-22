@@ -71,11 +71,14 @@ nav img{height:26px;}
 @media(max-width:560px){.navlinks{display:none;}}
 @media(prefers-reduced-motion:reduce){.introart video{display:none;}.introart .still{display:block;}.typed .cursor{animation:none;}}
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/theme.css">
 </head>
 <body>
 <nav><div class="wrap">
   <a href="index.html"><img src="assets/wordmark.png" alt="FOXXY"></a>
   <div class="navlinks">
+    <a href="play.html" class="play-link">Play</a>
     <a href="score.html">Score</a>
     <a href="leaderboard.html">Leaderboard</a>
     <a href="world.html">How it works</a>
@@ -105,6 +108,7 @@ nav img{height:26px;}
         <div class="introbtns">
           <a class="btn solid" href="world.html#utility">How it works</a>
           <a class="btn" href="score.html">Check your score</a>
+          <a class="btn play" href="play.html">Play Era Run</a>
         </div>
         <p class="scrollhint">Or scroll down to learn more</p>
       </div>
@@ -138,6 +142,46 @@ nav img{height:26px;}
   marks();type();
 })();
 </script>
+
+
+<section class="home-sec" id="eras"><div class="wrap">
+  <p class="kicker">ONE FOX · FOUR ERAS</p>
+  <h2>Your wallet decides your fox</h2>
+  <div class="era-row">
+      <a class="era-card tilt c1" href="world.html">
+        <video autoplay muted loop playsinline preload="none" poster="assets/era1-poster.jpg"><source src="assets/era1.mp4" type="video/mp4"></video>
+        <div class="ec"><span>ERA I</span><h3>Ancient warriors</h3></div>
+      </a>
+      <a class="era-card tilt c2" href="world.html">
+        <video autoplay muted loop playsinline preload="none" poster="assets/era2-poster.jpg"><source src="assets/era2.mp4" type="video/mp4"></video>
+        <div class="ec"><span>ERA II</span><h3>Modern operators</h3></div>
+      </a>
+      <a class="era-card tilt c3" href="world.html">
+        <video autoplay muted loop playsinline preload="none" poster="assets/era3-poster.jpg"><source src="assets/era3.mp4" type="video/mp4"></video>
+        <div class="ec"><span>ERA III</span><h3>Digital minds</h3></div>
+      </a>
+      <a class="era-card tilt c4" href="world.html">
+        <video autoplay muted loop playsinline preload="none" poster="assets/era4-poster.jpg"><source src="assets/era4.mp4" type="video/mp4"></video>
+        <div class="ec"><span>ERA IV</span><h3>Cyber legends</h3></div>
+      </a>
+  </div>
+</div></section>
+
+<section class="home-sec" id="era-run"><div class="wrap tgrid">
+  <div>
+    <p class="kicker">NEW · ERA RUN</p>
+    <h2>Run the eras. Bank your best.</h2>
+    <p class="sub">Sprint from the Ancient temples to the Cyber city. Turn at the corners, jump, slide and slash through walls with your katana. Your best run adds up to 150 points to your wallet score.</p>
+    <div class="pill-row"><span class="pill"><b>4</b> eras</span><span class="pill"><b>4</b> foxes to pick</span><span class="pill">up to <b>150</b> pts</span></div>
+    <div class="btns"><a class="btn play" href="play.html">Play Era Run</a><a class="btn" href="score.html">Check your score</a></div>
+  </div>
+  <div class="stack tilt">
+    <img class="c1" src="assets/era1-poster.jpg" alt="">
+    <img class="c2" src="assets/era2-poster.jpg" alt="">
+    <img class="c3" src="assets/era3-poster.jpg" alt="">
+    <img class="c4" src="assets/era4-poster.jpg" alt="FOXXY eras">
+  </div>
+</div></section>
 
 <!-- ── Background audio ───────────────────────────────────────────────── -->
 <audio id="bgAudio" loop preload="auto">
@@ -186,5 +230,6 @@ nav img{height:26px;}
   apply();
 })();
 </script>
+<script src="assets/theme.js"></script>
 </body>
 </html>

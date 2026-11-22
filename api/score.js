@@ -131,6 +131,8 @@ async function fetchInboundTransfers(wallet) {
 }
 
 module.exports = async (req, res) => {
+  // Era Run banking shares this function (vercel.json rewrites /api/game -> /api/score?game=1)
+  if (req.query.game) return require('../lib/game')(req, res);
   if (req.method !== 'GET') return res.status(405).end();
 
   const raw = (req.query.wallet || '').trim();
@@ -247,18 +249,29 @@ module.exports = async (req, res) => {
     // ── Bonus points (giveaways, campaigns) ─────────────────────────────────
     const db = getDb();
     await ensureSchema();
-    const bonusRows = await db`
-      SELECT COALESCE(SUM(points),0)::int AS pts FROM bonuses WHERE wallet = ${wallet}
-    `;
-    const bonusScore = bonusRows[0]?.pts || 0;
+    // Some writers use a `pts` column, others `points` — read whichever exists.
+    let bonusScore = 0;
+    try {
+      const bonusRows = await db`SELECT to_jsonb(b) AS r FROM bonuses b WHERE b.wallet = ${wallet}`;
+      bonusScore = bonusRows.reduce((sum, { r }) => sum + (parseInt(r?.pts ?? r?.points ?? 0, 10) || 0), 0);
+    } catch (e) { console.error('bonus read error:', e); }
+
+    // ── Era Run game points (best run, capped in lib/game.js) ───────────────
+    let gameScore = 0;
+    try {
+      const g = await db`SELECT pts FROM game_best WHERE wallet = ${wallet}`;
+      gameScore = g[0]?.pts || 0;
+    } catch (e) { /* table not created yet — no game points */ }
 
     // ── Total ────────────────────────────────────────────────────────────────
     const total = holdingsScore + durationScore + diversityScore + mintScore + volumeScore
-                + genNftScore + genDivScore + genMintScore + robinhoodScore + bonusScore;
+                + genNftScore + genDivScore + genMintScore + robinhoodScore + bonusScore
+                + gameScore;
 
     const breakdown = {
       holdings:      holdingsScore,
       bonus:         bonusScore,
+      game:          gameScore,
       duration:      durationScore,
       diversity:     diversityScore,
       mints:         mintScore,

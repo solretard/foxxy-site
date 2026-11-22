@@ -418,13 +418,13 @@ function makeFoxxy(vi){
   // ---- chest: cloak top, high open collar, lapels
   const chest = new THREE.Group(); chest.position.y = .05; hips.add(chest);
   chest.add(lathe([[.212, 0], [.218, .2], [.23, .34], [.17, .42], [.12, .45]], robe, .78));
-  chest.add(lathe([[.17, .36], [.168, .46], [.152, .56], [.165, .62]], robe, .86, .55, Math.PI * 2 - 1.1));
-  chest.add(lathe([[.168, .6], [.166, .625]], trim, .86, .55, Math.PI * 2 - 1.1));
+  chest.add(lathe([[.17, .36], [.166, .44], [.155, .5], [.165, .535]], robe, .86, .85, Math.PI * 2 - 1.7));
+  chest.add(lathe([[.165, .52], [.166, .54]], trim, .86, .85, Math.PI * 2 - 1.7));
   for (const s of [-1, 1]){
     const lap = new THREE.Mesh(new THREE.BoxGeometry(.05, .4, .012), lapelM);
     lap.position.set(.05 * s, .2, .178); lap.rotation.set(.06, 0, -.24 * s); chest.add(lap);
   }
-  chest.add(limb(v(0, .38, 0), v(0, .57, 0), .08, .072, fur));
+  chest.add(limb(v(0, .38, 0), v(0, .62, 0), .08, .07, fur));
   // chest fur tuft poking out of the collar
 
   // ---- katana sheathed across the back (handle over the right shoulder)
@@ -437,7 +437,7 @@ function makeFoxxy(vi){
   backK.add(limb(v(-.18, .38, .05), v(.21, -.1, .12), .01, .01, cordM, 6));    // strap across the chest
 
   // ---- head: blended-part fox head (long muzzle, forehead stop, triangular face)
-  const head = new THREE.Group(); head.position.y = .62; chest.add(head);
+  const head = new THREE.Group(); head.position.y = .66; chest.add(head);
   head.add(new THREE.Mesh(FOXHEAD.geo.clone(), fur));
   const Z = v(0, 0, 1);
   const at = (x, y, z, out = 0) => FOXHEAD.snap(v(x, y, z), out);
@@ -452,10 +452,16 @@ function makeFoxxy(vi){
   const lipM = new THREE.MeshStandardMaterial({ color: '#1a1a1a', roughness: .5 });
   const whiskM = new THREE.LineBasicMaterial({ color: '#2d2d2d', transparent: true, opacity: .6 });
   const ears = [];
-  const earG = (() => { const g = new THREE.ConeGeometry(.105, .3, 24, 8, true), p = g.attributes.position;
+  const earG = (() => { const g = new THREE.ConeGeometry(.105, .3, 24, 8, true), p = g.attributes.position, oz = new Float32Array(p.count);
     for (let i = 0; i < p.count; i++){ const x = p.getX(i), y = p.getY(i), z = p.getZ(i), t = (y + .15) / .3;
-      let nz = z * .42; if (z > 0) nz -= .04 * (1 - Math.min(1, Math.abs(x) / .105)) * (1 - t); p.setXYZ(i, x, y + .15, nz); }
-    g.computeVertexNormals(); g.setAttribute('furK', new THREE.BufferAttribute(new Float32Array(p.count).fill(.45), 1)); return g; })();
+      oz[i] = z; let nz = z * .42; if (z > 0) nz -= .04 * (1 - Math.min(1, Math.abs(x) / .105)) * (1 - t); p.setXYZ(i, x, y + .15, nz); }
+    g.computeVertexNormals(); g.setAttribute('furK', new THREE.BufferAttribute(new Float32Array(p.count).fill(.45), 1));
+    const ec = new Float32Array(p.count * 3);
+    for (let i = 0; i < p.count; i++){ const y = p.getY(i), t = y / .3, x = p.getX(i);
+      const inside = oz[i] > 0 && Math.abs(x) < .105 * .78 * (1 - t * .7) && t < .9;
+      let c = inside ? .3 : 1; if (t > .8) c = Math.min(c, .28 + (1 - t) * 2);
+      ec[i * 3] = c; ec[i * 3 + 1] = c * 1.02; ec[i * 3 + 2] = c * 1.05; }
+    g.setAttribute('color', new THREE.BufferAttribute(ec, 3)); return g; })();
   for (const s of [-1, 1]){
     const [sx, sy, sz] = FOXHEAD.SOCK[s < 0 ? 0 : 1], dir = v(s * .45, .12, .9).normalize();
     const eyeAt = o => v(sx, sy, sz).addScaledVector(dir, o);
@@ -468,8 +474,6 @@ function makeFoxxy(vi){
     const ear = new THREE.Group(); ear.position.copy(onHead(s * .068, .08, -.035, -.016));
     ear.quaternion.setFromUnitVectors(Y, v(s * .28, 1, -.1).normalize()); ear.rotateY(-s * .4); head.add(ear);
     ear.add(new THREE.Mesh(earG, fur));
-    const inner = new THREE.Mesh(earG, furDark); inner.scale.set(.74, .86, .74); inner.position.set(0, .01, .008); ear.add(inner);
-    const tip = new THREE.Mesh(new THREE.ConeGeometry(.03, .08, 12), furDark); tip.position.y = .265; tip.scale.z = .5; ear.add(tip);
     ears.push(ear);
     // mouth line + whiskers
     const mp = [[0, -.06, .205], [s * .018, -.063, .17], [s * .034, -.06, .125], [s * .046, -.052, .085]].map(([x, y, z]) => onHead(x, y, z, .002));
